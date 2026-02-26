@@ -74,9 +74,12 @@
   let targetRadius = 60;
 
   let isDragging = false;
+  let isPinching = false;
   let isReleasing = false;
   let releaseStartTime = 0;
   let releaseStartRadius = 0;
+
+  const activePointers = new Map();
 
   let syncCounter = 0;
   let lastCycleIndex = 0;
@@ -135,40 +138,105 @@
     };
   }
 
+  function getFirstPointerPos() {
+    const iter = activePointers.values().next();
+    return iter.done ? null : iter.value;
+  }
+
+  function getTwoPointerPositions() {
+    const values = Array.from(activePointers.values());
+    if (values.length < 2) return null;
+    return [values[0], values[1]];
+  }
+
+  function beginRelease(now) {
+    isDragging = false;
+    isPinching = false;
+    isReleasing = true;
+    releaseStartTime = now;
+    releaseStartRadius = userRadius;
+    const rest = minR * SETTINGS.userMinMultiplier;
+    rawRadius = rest;
+    targetRadius = rest;
+  }
+
+  function syncInteractionMode() {
+    const count = activePointers.size;
+
+    if (count >= 2) {
+      isPinching = true;
+      isDragging = false;
+      isReleasing = false;
+
+      const pair = getTwoPointerPositions();
+      if (pair) {
+        const pinchDistance = distance(pair[0].x, pair[0].y, pair[1].x, pair[1].y);
+        const pinchRadius = clamp(pinchDistance * 0.5, minR, maxR);
+        rawRadius = pinchRadius;
+        targetRadius = pinchRadius;
+      }
+      return;
+    }
+
+    if (count === 1) {
+      isPinching = false;
+      isDragging = true;
+      isReleasing = false;
+
+      const pointer = getFirstPointerPos();
+      if (pointer) {
+        const dist = distance(pointer.x, pointer.y, cx, cy);
+        const clamped = clamp(dist, minR, maxR);
+        rawRadius = clamped;
+        targetRadius = clamped;
+      }
+      return;
+    }
+
+    if (isDragging || isPinching) {
+      beginRelease(performance.now());
+    } else {
+      isDragging = false;
+      isPinching = false;
+    }
+  }
+
   // ===== Обработка указателя (пользовательский круг) =====
   function onPointerDown(e) {
     e.preventDefault();
     const { x, y } = toCanvasCoords(e);
-    const dist = distance(x, y, cx, cy);
-    const clamped = clamp(dist, minR, maxR);
-    rawRadius = clamped;
-    targetRadius = clamped;
-
-    isDragging = true;
-    isReleasing = false;
+    activePointers.set(e.pointerId, { x, y });
+    syncInteractionMode();
     canvas.setPointerCapture(e.pointerId);
   }
 
   function onPointerMove(e) {
-    if (!isDragging) return;
+    if (!activePointers.has(e.pointerId)) return;
     e.preventDefault();
     const { x, y } = toCanvasCoords(e);
+    activePointers.set(e.pointerId, { x, y });
+
+    if (isPinching) {
+      const pair = getTwoPointerPositions();
+      if (!pair) return;
+      const pinchDistance = distance(pair[0].x, pair[0].y, pair[1].x, pair[1].y);
+      rawRadius = clamp(pinchDistance * 0.5, minR, maxR);
+      return;
+    }
+
+    if (!isDragging) return;
+
     const dist = distance(x, y, cx, cy);
     rawRadius = clamp(dist, minR, maxR);
   }
 
   function onPointerUp(e) {
-    if (!isDragging) return;
-    e.preventDefault();
-    isDragging = false;
-    canvas.releasePointerCapture(e.pointerId);
+    const hadPointer = activePointers.delete(e.pointerId);
+    if (!hadPointer) return;
 
-    isReleasing = true;
-    releaseStartTime = performance.now();
-    releaseStartRadius = userRadius;
-    const rest = minR * SETTINGS.userMinMultiplier;
-    rawRadius = rest;
-    targetRadius = rest;
+    e.preventDefault();
+    canvas.releasePointerCapture(e.pointerId);
+    syncInteractionMode();
   }
 
   canvas.addEventListener('pointerdown', onPointerDown);

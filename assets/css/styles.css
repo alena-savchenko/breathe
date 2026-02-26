@@ -92,6 +92,7 @@ body {
 
 canvas {
   display: block;
+  touch-action: none;
 }
 
 /* Одинаковые кнопки (язык и настройки) */
