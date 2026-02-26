@@ -33,6 +33,19 @@
     userGlowColor: 'rgba(200,120,255,0.9)'
   };
 
+  const THEME_COLORS = {
+    light: {
+      backgroundColor: '#ffffff',
+      centralDotColor: '#444444'
+    },
+    dark: {
+      backgroundColor: '#10141d',
+      centralDotColor: '#d8dde8'
+    }
+  };
+
+  let currentTheme = 'light';
+
   const canvas = document.getElementById('breathCanvas');
   const ctx = canvas.getContext('2d');
 
@@ -325,6 +338,17 @@
   requestAnimationFrame(loop);
 
   // ===== Публичный API для UI =====
+  function setTheme(themeName) {
+    currentTheme = themeName === 'dark' ? 'dark' : 'light';
+    const colors = THEME_COLORS[currentTheme];
+    SETTINGS.backgroundColor = colors.backgroundColor;
+    SETTINGS.centralDotColor = colors.centralDotColor;
+  }
+
+  function getTheme() {
+    return currentTheme;
+  }
+
   function setBreathingSpeedBpm(bpm) {
     const safeBpm = Math.max(1, Number(bpm) || 1);
     breathingBpm = safeBpm;
@@ -344,8 +368,12 @@
   }
 
   window.BreathApp = {
+    setTheme,
+    getTheme,
     setBreathingSpeedBpm,
     getBreathingSpeedBpm,
     onCycle
   };
+
+  setTheme('light');
 })();

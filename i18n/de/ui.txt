@@ -7,6 +7,9 @@ language.hint=Sprache der Oberfläche auswählen:
 # Labels
 settings.breathsPerMinute.label=Atemzüge pro Minute:
 settings.breathsPerMinute.hint=Langsames Atmen (4–12 Atemzüge pro Minute) kann dein Nervensystem beruhigen.|Beobachte die Kreise und bewege den Regler, bis sich der Rhythmus angenehm anfühlt.
+settings.theme.label=Dunkles Design
+settings.theme.hint=Das dunkle Design reduziert die Bildschirmhelligkeit und ist bei wenig Licht angenehmer.
+settings.theme.ariaLabel=Dunkles Design umschalten
 buttons.langToggle.ariaLabel=Sprache auswählen
 buttons.settingsToggle.ariaLabel=Einstellungen
 

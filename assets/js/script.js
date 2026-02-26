@@ -1,6 +1,7 @@
 // script.js
 (function () {
   const DEFAULT_LANG = 'ru';
+  const DEFAULT_THEME = 'light';
 
   const SUPPORTED_LANGS = [
     { code: 'ru', label: 'Русский' },
@@ -18,7 +19,26 @@
     return DEFAULT_LANG;
   }
 
+  function getInitialTheme() {
+    try {
+      const stored = localStorage.getItem('breath_theme');
+      if (stored === 'light' || stored === 'dark') return stored;
+    } catch (_) {}
+
+    try {
+      if (
+        window.matchMedia &&
+        window.matchMedia('(prefers-color-scheme: dark)').matches
+      ) {
+        return 'dark';
+      }
+    } catch (_) {}
+
+    return DEFAULT_THEME;
+  }
+
   let currentLang = getInitialLang();
+  let currentTheme = getInitialTheme();
 
   // Фразы над анимацией
   let messages = [];
@@ -47,6 +67,7 @@
   let settingsToggle, settingsPanel, settingsBackdrop, settingsClose;
   let langToggle, langPanel, langClose, langList;
   let speedSlider, speedValueEl;
+  let themeToggle;
 
   // ===== Парсеры текстов =====
   function parseMessagesText(text) {
@@ -261,12 +282,43 @@
 
     setHtml('i18n-settings-breathsPerMinute-label', 'settings.breathsPerMinute.label');
     setHtml('i18n-settings-breathsPerMinute-hint', 'settings.breathsPerMinute.hint', ['br']);
+    setHtml('i18n-settings-theme-label', 'settings.theme.label');
+    setHtml('i18n-settings-theme-hint', 'settings.theme.hint', ['br']);
 
     setHtml('i18n-description-title', 'description.title');
     setHtml('i18n-description-body', 'description.body', ['br']);
 
     setAriaLabel('langToggle', 'buttons.langToggle.ariaLabel');
     setAriaLabel('settingsToggle', 'buttons.settingsToggle.ariaLabel');
+    setAriaLabel('themeToggle', 'settings.theme.ariaLabel');
+  }
+
+  function applyTheme(theme, persist) {
+    currentTheme = theme === 'dark' ? 'dark' : 'light';
+
+    document.body.classList.toggle('theme-dark', currentTheme === 'dark');
+
+    if (themeToggle) {
+      themeToggle.checked = currentTheme === 'dark';
+    }
+
+    const themeColorMeta = document.querySelector('meta[name="theme-color"]');
+    if (themeColorMeta) {
+      themeColorMeta.setAttribute(
+        'content',
+        currentTheme === 'dark' ? '#10141d' : '#ffffff'
+      );
+    }
+
+    if (window.BreathApp && typeof window.BreathApp.setTheme === 'function') {
+      window.BreathApp.setTheme(currentTheme);
+    }
+
+    if (persist !== false) {
+      try {
+        localStorage.setItem('breath_theme', currentTheme);
+      } catch (_) {}
+    }
   }
 
   // ===== Шторки (настройки и язык) =====
@@ -410,6 +462,7 @@
 
     speedSlider = document.getElementById('speedSlider');
     speedValueEl = document.getElementById('speedValue');
+    themeToggle = document.getElementById('themeToggle');
 
     // Обработчики шторок
     if (settingsToggle) settingsToggle.addEventListener('click', toggleSettings);
@@ -421,6 +474,12 @@
       settingsBackdrop.addEventListener('click', () => {
         closeSettings();
         closeLangPanel();
+      });
+    }
+
+    if (themeToggle) {
+      themeToggle.addEventListener('change', () => {
+        applyTheme(themeToggle.checked ? 'dark' : 'light', true);
       });
     }
 
@@ -437,6 +496,7 @@
     // UI-часть
     renderLangList();
     initBreathingSpeedFromSlider();
+    applyTheme(currentTheme, false);
 
     // Загрузка текстов
     applyLanguage(currentLang);
