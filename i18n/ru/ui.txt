@@ -1,0 +1,15 @@
+# Titles
+settings.title=Настройки
+settings.breathingSpeed.title=Скорость дыхания
+language.title=Язык
+language.hint=Выберите язык интерфейса:
+
+# Labels
+settings.breathsPerMinute.label=Вдохов в минуту:
+settings.breathsPerMinute.hint=Медленное дыхание (4–12 вдохов в минуту) может помочь нервной системе успокоиться.|Следите за движением кругов и двигайте ползунок, пока ритм не станет комфортным.
+buttons.langToggle.ariaLabel=Выбрать язык
+buttons.settingsToggle.ariaLabel=Настройки
+
+# About block
+description.title=О приложении
+description.body=Этот инструмент помогает регулировать состояние через медленное ритмичное дыхание и мягкую визуальную поддержку.|Скоро появятся новые возможности: темы, звук, расширенные практики и многоязычный контент.

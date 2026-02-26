@@ -1,0 +1,301 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  background: #ffffff;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body {
+  position: relative;
+}
+
+/* Текст над анимацией */
+.breath-text {
+  position: absolute;
+  top: 48px;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 24px;
+  line-height: 1.5;
+  color: #444;
+  opacity: 0;
+  transition: opacity 1s ease;
+  pointer-events: none;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+canvas {
+  display: block;
+}
+
+/* Одинаковые кнопки (язык и настройки) */
+.lang-toggle,
+.settings-toggle {
+  position: absolute;
+  top: 20px;
+  z-index: 20;
+
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  border: none;
+
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.10);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+}
+
+.lang-toggle:hover,
+.settings-toggle:hover {
+  background: rgba(255, 255, 255, 1);
+}
+
+.lang-toggle:active,
+.settings-toggle:active {
+  transform: scale(0.94);
+}
+
+/* Светлые иконки */
+.lang-toggle svg,
+.settings-toggle svg {
+  stroke: #777;
+  stroke-width: 1.6;
+}
+
+/* Позиции */
+.settings-toggle {
+  right: 20px;
+}
+
+.lang-toggle {
+  right: 92px;
+}
+
+/* Бекдроп под шторками */
+.settings-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.12);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 15;
+}
+
+.settings-backdrop.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Шторки справа */
+.settings-panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  width: min(320px, 80vw);
+  background: #f7f7f7;
+  box-shadow: -4px 0 16px rgba(0, 0, 0, 0.18);
+  transform: translateX(100%);
+  transition: transform 0.25s ease;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+}
+
+.settings-panel.open {
+  transform: translateX(0);
+}
+
+.settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 16px 8px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.settings-header h2 {
+  font-size: 18px;
+  margin: 0;
+}
+
+.settings-close {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 18px;
+  padding: 4px 8px;
+}
+
+.settings-content {
+  padding: 16px;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #444;
+  overflow-y: auto;
+}
+
+/* Языковой список */
+.lang-hint {
+  font-size: 13px;
+  margin-bottom: 12px;
+  color: #555;
+}
+
+.lang-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.lang-list li {
+  margin-bottom: 8px;
+}
+
+.lang-button {
+  width: 100%;
+  text-align: left;
+  border-radius: 999px;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #ffffff;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.lang-button span.code {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.lang-button.active {
+  border-color: #4a7bff;
+  background: #e6ecff;
+  font-weight: 600;
+}
+
+/* Заголовок */
+.settings-content h3 {
+  margin-top: 0;
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+/* Ползунок */
+.slider-label {
+  margin-bottom: 6px;
+  font-size: 14px;
+  color: #333;
+}
+
+#speedValue {
+  font-weight: 600;
+}
+
+.slider {
+  width: 100%;
+  margin-bottom: 10px;
+  appearance: none;
+  height: 6px;
+  border-radius: 4px;
+  background: #ddd;
+  outline: none;
+  cursor: pointer;
+}
+
+.slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #666;
+  cursor: pointer;
+}
+
+.slider::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #666;
+  cursor: pointer;
+}
+
+.slider-hint {
+  font-size: 12px;
+  color: #555;
+  margin: 8px 0 20px;
+  line-height: 1.4;
+}
+
+.settings-content hr {
+  border: 0;
+  height: 1px;
+  background: #e0e0e0;
+  margin: 20px 0;
+}
+
+/* Нижний блок */
+.description {
+  margin-top: 100vh;
+  padding: 40px 16px 80px;
+  max-width: 700px;
+  box-sizing: border-box;
+  color: #444;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.description h1 {
+  font-size: 28px;
+  margin-bottom: 16px;
+}
+
+.description p {
+  margin: 0 0 12px;
+}
+
+/* Адаптивность */
+@media (max-width: 480px) {
+  .breath-text {
+    font-size: 20px;
+    top: 44px;
+    padding: 0 12px;
+  }
+
+  .lang-toggle,
+  .settings-toggle {
+    width: 52px;
+    height: 52px;
+    top: 16px;
+  }
+
+  .settings-toggle {
+    right: 16px;
+  }
+
+  .lang-toggle {
+    right: 84px;
+  }
+
+  .description {
+    padding: 32px 16px 64px;
+  }
+}

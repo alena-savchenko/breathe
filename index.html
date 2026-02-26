@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <meta name="theme-color" content="#ffffff" />
+
+<title>Breathe – Calm Down Now with Online Guided Breathing</title>
+
+<meta name="description" content="Free online breathing tool to calm a panic attack, anxiety or overwhelm. Watch the circles, breathe with the rhythm and feel your body slowly relax and feel safe again.">
+
+<meta name="keywords" content="breathe online, online breathing tool, calm down now, calm panic attack, stop panic attack, help with panic attack, breathing for anxiety, anxiety attack breathing exercise, slow breathing exercise, deep breathing exercise, guided breathing, grounding exercise, calm breathing app, regulate nervous system, how to stop hyperventilating, relax quickly, breathing circle, box breathing, 4-7-8 breathing, stress relief breathing">
+
+  <link rel="stylesheet" href="./assets/css/styles.css" />
+</head>
+
+<body>
+
+  <!-- Текст поверх анимации -->
+  <div id="breathText" class="breath-text"></div>
+
+  <!-- Кнопка выбора языка -->
+  <button id="langToggle" class="lang-toggle" aria-label="Choose language">
+    <svg width="24" height="24" viewBox="0 0 24 24"
+         fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="2" y1="12" x2="22" y2="12"/>
+      <path d="M12 2c3 4 3 16 0 20"/>
+      <path d="M12 2c-3 4-3 16 0 20"/>
+    </svg>
+  </button>
+
+  <!-- Кнопка настроек -->
+  <button id="settingsToggle" class="settings-toggle" aria-label="Settings">
+    <svg width="24" height="24" viewBox="0 0 24 24"
+         fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="12" r="3"/>
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33A1.65 1.65 0 0 0 9 3.09V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82 1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/>
+    </svg>
+  </button>
+
+  <!-- Шторка выбора языка -->
+  <aside id="langPanel" class="settings-panel" aria-hidden="true">
+    <header class="settings-header">
+      <h2 id="i18n-language-title">Language</h2>
+      <button id="langClose" class="settings-close">✕</button>
+    </header>
+    <div class="settings-content">
+      <p id="i18n-language-hint" class="lang-hint">
+        Choose interface language:
+      </p>
+      <ul id="langList" class="lang-list"></ul>
+    </div>
+  </aside>
+
+  <!-- Шторка настроек -->
+  <aside id="settingsPanel" class="settings-panel" aria-hidden="true">
+    <header class="settings-header">
+      <h2 id="i18n-settings-title">Settings</h2>
+      <button id="settingsClose" class="settings-close">✕</button>
+    </header>
+    <div class="settings-content">
+      <h3 id="i18n-settings-breathingSpeed-title">Breathing speed</h3>
+
+      <label for="speedSlider" class="slider-label">
+        <span id="i18n-settings-breathsPerMinute-label">
+          Breaths per minute:
+        </span>
+        <span id="speedValue">6</span>
+      </label>
+
+      <input
+        id="speedSlider"
+        type="range"
+        min="4"
+        max="12"
+        step="1"
+        value="6"
+        class="slider"
+      />
+
+      <p id="i18n-settings-breathsPerMinute-hint" class="slider-hint">
+        Slow breathing (4–12 breaths/min) helps the nervous system calm down.<br>
+        Watch the circles and move the slider until the rhythm feels comfortable.
+      </p>
+    </div>
+  </aside>
+
+  <!-- Общий полупрозрачный фон под шторками -->
+  <div id="settingsBackdrop" class="settings-backdrop"></div>
+
+  <!-- Canvas -->
+  <canvas id="breathCanvas"></canvas>
+
+  <!-- Нижний блок -->
+  <div class="description">
+    <h1 id="i18n-description-title">About</h1>
+    <p id="i18n-description-body">
+      This breathing tool helps you regulate your state through slow,
+      rhythmic breathing with visual feedback. More features coming soon:
+      themes, sound, expanded practices, multilingual support, and more.
+    </p>
+  </div>
+
+  <!-- JS: сначала анимация, потом UI / i18n -->
+  <script src="./assets/js/breath.js"></script>
+  <script src="./assets/js/script.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,15 @@
+# Titles
+settings.title=Налаштування
+settings.breathingSpeed.title=Швидкість дихання
+language.title=Мова
+language.hint=Оберіть мову інтерфейсу:
+
+# Labels
+settings.breathsPerMinute.label=Вдихів на хвилину:
+settings.breathsPerMinute.hint=Повільне дихання (4–12 вдихів на хвилину) може допомогти заспокоїти нервову систему.|Стеж за рухом кіл і рухай повзунок, доки ритм не стане комфортним.
+buttons.langToggle.ariaLabel=Обрати мову
+buttons.settingsToggle.ariaLabel=Налаштування
+
+# About block
+description.title=Про застосунок
+description.body=Цей інструмент допомагає врівноважити стан завдяки повільному ритмічному диханню та м’якій візуальній підтримці.|Невдовзі з’являться нові можливості: теми, звук, розширені практики та багатомовний контент.

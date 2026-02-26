@@ -1,0 +1,15 @@
+# Titles
+settings.title=Einstellungen
+settings.breathingSpeed.title=Atemgeschwindigkeit
+language.title=Sprache
+language.hint=Sprache der Oberfläche auswählen:
+
+# Labels
+settings.breathsPerMinute.label=Atemzüge pro Minute:
+settings.breathsPerMinute.hint=Langsames Atmen (4–12 Atemzüge pro Minute) kann dein Nervensystem beruhigen.|Beobachte die Kreise und bewege den Regler, bis sich der Rhythmus angenehm anfühlt.
+buttons.langToggle.ariaLabel=Sprache auswählen
+buttons.settingsToggle.ariaLabel=Einstellungen
+
+# About block
+description.title=Über das Tool
+description.body=Dieses Atemwerkzeug hilft, den Zustand durch langsames, rhythmisches Atmen und sanfte visuelle Unterstützung zu regulieren.|Bald folgen weitere Funktionen: Themes, Sound, erweiterte Übungen und mehrsprachige Inhalte.

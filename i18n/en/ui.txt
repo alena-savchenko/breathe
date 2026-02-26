@@ -1,0 +1,15 @@
+# Titles
+settings.title=Settings
+settings.breathingSpeed.title=Breathing speed
+language.title=Language
+language.hint=Choose interface language:
+
+# Labels
+settings.breathsPerMinute.label=Breaths per minute:
+settings.breathsPerMinute.hint=Slow breathing (4–12 breaths per minute) can help your nervous system calm down.|Watch the circles and move the slider until the rhythm feels comfortable.
+buttons.langToggle.ariaLabel=Choose language
+buttons.settingsToggle.ariaLabel=Settings
+
+# About block
+description.title=About
+description.body=This breathing tool helps you regulate your state with slow, rhythmic breathing and soft visual feedback.|More features are coming soon: themes, sound, extended practices and multilingual content.
