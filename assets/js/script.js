@@ -806,7 +806,7 @@
       }
     });
 
-    // Связь с анимацией: обновление текста каждые 3 цикла
+    // Связь с анимацией: обновление текста по выбранному числу циклов
     window.BreathApp.onCycle(handleCycleAdvance);
     requestAnimationFrame(updateMessageFillLoop);
 
