@@ -27,10 +27,14 @@
     autoColorIdle: 'rgba(80, 150, 255, 0.5)',
     autoColorSynced: 'rgba(80, 150, 255, 0.9)',
     autoGlowColor: 'rgba(80,150,255,0.9)',
+    autoGradientIdle: ['rgba(70, 130, 255, 0.55)', 'rgba(122, 182, 255, 0.45)'],
+    autoGradientSynced: ['rgba(70, 130, 255, 0.98)', 'rgba(140, 205, 255, 0.9)'],
 
     userColorIdle: 'rgba(180, 80, 255, 0.6)',
     userColorSynced: 'rgba(180, 80, 255, 0.95)',
-    userGlowColor: 'rgba(200,120,255,0.9)'
+    userGlowColor: 'rgba(200,120,255,0.9)',
+    userGradientIdle: ['rgba(154, 92, 255, 0.64)', 'rgba(212, 132, 255, 0.52)'],
+    userGradientSynced: ['rgba(164, 96, 255, 0.98)', 'rgba(226, 150, 255, 0.92)']
   };
 
   const THEME_COLORS = {
@@ -56,6 +60,7 @@
 
   let breathingBpm = 6;
   let breathingSpeedRad = breathsPerMinuteToRadPerSec(breathingBpm);
+  let phaseBaseAngle = 0;
 
   // ===== Состояние для анимации =====
   let width = 0;
@@ -85,6 +90,7 @@
   let lastCycleIndex = 0;
 
   const startTime = performance.now();
+  let phaseBaseTime = startTime;
 
   // Колбэк для уведомления о завершении цикла дыхания
   let cycleHandler = null;
@@ -129,6 +135,11 @@
 
   function smoothStep(x) {
     return x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x);
+  }
+
+  function getPhaseAngleAt(now) {
+    const tSec = (now - phaseBaseTime) / 1000;
+    return phaseBaseAngle + breathingSpeedRad * tSec;
   }
 
   function toCanvasCoords(event) {
@@ -256,6 +267,7 @@
     const {
       lineWidth = SETTINGS.lineWidth,
       color = 'rgba(0,0,0,0.6)',
+      gradientColors = null,
       noiseAmp = 6,
       noiseFreq = 5,
       noiseSpeed = 1,
@@ -265,7 +277,19 @@
 
     ctx.save();
     ctx.lineWidth = lineWidth;
-    ctx.strokeStyle = color;
+    if (Array.isArray(gradientColors) && gradientColors.length >= 2) {
+      const gradient = ctx.createLinearGradient(
+        cx - radius,
+        cy - radius,
+        cx + radius,
+        cy + radius
+      );
+      gradient.addColorStop(0, gradientColors[0]);
+      gradient.addColorStop(1, gradientColors[1]);
+      ctx.strokeStyle = gradient;
+    } else {
+      ctx.strokeStyle = color;
+    }
     ctx.fillStyle = 'transparent';
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
@@ -303,7 +327,7 @@
     requestAnimationFrame(loop);
 
     const tSec = (now - startTime) / 1000;
-    const phaseAngle = breathingSpeedRad * tSec;
+    const phaseAngle = getPhaseAngleAt(now);
     const cycleIndex = Math.floor(phaseAngle / (2 * Math.PI));
 
     // Сообщаем о завершении цикла (для текста и т.п.)
@@ -379,8 +403,13 @@
       ? SETTINGS.autoColorSynced
       : SETTINGS.autoColorIdle;
 
+    const autoGradient = visualSynced
+      ? SETTINGS.autoGradientSynced
+      : SETTINGS.autoGradientIdle;
+
     drawWobblyCircle(r1, tSec, {
       color: autoColor,
+      gradientColors: autoGradient,
       noiseAmp: SETTINGS.autoNoise.amp,
       noiseFreq: SETTINGS.autoNoise.freq,
       noiseSpeed: SETTINGS.autoNoise.speed,
@@ -393,8 +422,13 @@
       ? SETTINGS.userColorSynced
       : SETTINGS.userColorIdle;
 
+    const userGradient = visualSynced
+      ? SETTINGS.userGradientSynced
+      : SETTINGS.userGradientIdle;
+
     drawWobblyCircle(userRadius, tSec + 10, {
       color: userColor,
+      gradientColors: userGradient,
       noiseAmp: SETTINGS.userNoise.amp,
       noiseFreq: SETTINGS.userNoise.freq,
       noiseSpeed: SETTINGS.userNoise.speed,
@@ -413,12 +447,19 @@
     SETTINGS.centralDotColor = colors.centralDotColor;
   }
 
+  function getPhaseAngle() {
+    return getPhaseAngleAt(performance.now());
+  }
+
   function getTheme() {
     return currentTheme;
   }
 
   function setBreathingSpeedBpm(bpm) {
     const safeBpm = Math.max(1, Number(bpm) || 1);
+    const now = performance.now();
+    phaseBaseAngle = getPhaseAngleAt(now);
+    phaseBaseTime = now;
     breathingBpm = safeBpm;
     breathingSpeedRad = breathsPerMinuteToRadPerSec(safeBpm);
   }
@@ -438,6 +479,7 @@
   window.BreathApp = {
     setTheme,
     getTheme,
+    getPhaseAngle,
     setBreathingSpeedBpm,
     getBreathingSpeedBpm,
     onCycle

@@ -2,6 +2,8 @@
 (function () {
   const DEFAULT_LANG = 'ru';
   const DEFAULT_THEME = 'light';
+  const MESSAGE_DURATION_CYCLES = 2;
+  const TWO_PI = Math.PI * 2;
 
   const SUPPORTED_LANGS = [
     { code: 'ru', label: 'Русский' },
@@ -61,6 +63,8 @@
   let uiStrings = {};
   let messagesLoadToken = 0;
   let uiLoadToken = 0;
+  let messageStartPhase = null;
+  let isMessageTransitioning = false;
 
   // DOM-элементы
   let textEl;
@@ -166,8 +170,65 @@
     textEl.style.opacity = 0;
     setTimeout(() => {
       textEl.innerHTML = sanitizeHtml(newHtml, ['br']);
+      resetMessageFill();
       textEl.style.opacity = 1;
+      isMessageTransitioning = false;
     }, 600);
+  }
+
+  function advanceToNextMessage() {
+    if (
+      isMessageTransitioning ||
+      currentMessageIndex >= messages.length - 1
+    ) {
+      return;
+    }
+
+    isMessageTransitioning = true;
+    currentMessageIndex += 1;
+    cyclesSinceChange = 0;
+    setTextWithFade(messages[currentMessageIndex]);
+  }
+
+  function getCurrentPhaseAngle() {
+    if (
+      !window.BreathApp ||
+      typeof window.BreathApp.getPhaseAngle !== 'function'
+    ) {
+      return null;
+    }
+
+    const phase = window.BreathApp.getPhaseAngle();
+    return Number.isFinite(phase) ? phase : null;
+  }
+
+  function resetMessageFill() {
+    if (!textEl) return;
+    textEl.style.setProperty('--fill', '1%');
+    const phase = getCurrentPhaseAngle();
+    messageStartPhase = phase == null ? null : phase;
+  }
+
+  function updateMessageFillLoop() {
+    requestAnimationFrame(updateMessageFillLoop);
+
+    if (!textEl || !messages.length) return;
+
+    const currentPhase = getCurrentPhaseAngle();
+    if (currentPhase == null) return;
+
+    if (messageStartPhase == null || currentPhase < messageStartPhase) {
+      messageStartPhase = currentPhase;
+    }
+
+    const totalPhase = MESSAGE_DURATION_CYCLES * TWO_PI;
+    const progress = clamp((currentPhase - messageStartPhase) / totalPhase, 0, 1);
+    const fillPercent = progress * 100;
+    textEl.style.setProperty('--fill', fillPercent + '%');
+
+    if (progress >= 0.96) {
+      advanceToNextMessage();
+    }
   }
 
   async function loadMessagesForLanguage(lang) {
@@ -202,6 +263,7 @@
     cyclesSinceChange = 0;
     if (textEl) {
       textEl.innerHTML = sanitizeHtml(messages[0] || '', ['br']);
+      resetMessageFill();
       requestAnimationFrame(() => {
         textEl.style.opacity = 1;
       });
@@ -214,11 +276,9 @@
 
     if (
       currentMessageIndex < messages.length - 1 &&
-      cyclesSinceChange >= 3
+      cyclesSinceChange >= MESSAGE_DURATION_CYCLES
     ) {
-      currentMessageIndex += 1;
-      cyclesSinceChange = 0;
-      setTextWithFade(messages[currentMessageIndex]);
+      advanceToNextMessage();
     }
   }
 
@@ -689,6 +749,7 @@
 
     // Связь с анимацией: обновление текста каждые 3 цикла
     window.BreathApp.onCycle(handleCycleAdvance);
+    requestAnimationFrame(updateMessageFillLoop);
 
     // UI-часть
     renderLangList();

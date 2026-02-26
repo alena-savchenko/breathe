@@ -26,6 +26,10 @@
   --switch-off-bg: #d7d7d7;
   --switch-on-bg: #4a7bff;
   --switch-thumb: #ffffff;
+
+  --quote-base: #38393b;
+  --quote-fill-blue: #4f8dff;
+  --quote-fill-violet: #8a59ff;
 }
 
 body.theme-dark {
@@ -55,7 +59,11 @@ body.theme-dark {
 
   --switch-off-bg: #4c5d7a;
   --switch-on-bg: #82a3ff;
-  --switch-thumb: #ffffff;
+  --quote-base: #d7deeb;
+  --quote-fill-blue: #7891bd;
+  --quote-fill-violet: #8f83bb;
+  --quote-fill-blue: #7ab0ff;
+  --quote-fill-violet: #b38cff;
 }
 
 html,
@@ -67,6 +75,7 @@ body {
   overflow-x: hidden;
   background: var(--page-bg);
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  color: var(--text-strong);
 }
 
 body {
@@ -80,11 +89,23 @@ body {
   bottom: 28px;
   transform: translateX(-50%);
   width: min(1200px, 90vw);
-  margin: 0;
+    --fill-softness: 8%;
   text-align: center;
   font-size: 24px;
   line-height: 1.5;
-  color: var(--text-main);
+    --fill: 1%;
+    --fill-softness: 10%;
+  color: var(--quote-base);
+  background-image: linear-gradient(
+    to right,
+      var(--quote-fill-blue) 0,
+      var(--quote-fill-violet) var(--fill),
+      var(--quote-base) calc(var(--fill) + var(--fill-softness)),
+    var(--quote-base) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
   opacity: 1;
   transition: opacity 1s ease;
   pointer-events: none;
