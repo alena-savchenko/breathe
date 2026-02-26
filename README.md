@@ -1,62 +1,76 @@
 # Breathe
 
-Breathe is a simple breathing guide that runs in your browser. It’s made for moments of acute anxiety or a panic attack, when installing an app, creating an account, or figuring out settings can feel impossible.
+A minimal breathing guide that runs in your browser — made for moments of acute anxiety or a panic attack, when installing an app, signing up, or dealing with settings can feel impossible.
 
-Open the link and start right away. The page shows a clear breathing rhythm with no distractions, so you can follow along without thinking. It works on any modern phone or computer and can be saved as a “safety link” in bookmarks, notes, or a pinned chat to share with someone who needs it.
+**Live:** [https://alena-savchenko.github.io/breathe/](https://alena-savchenko.github.io/breathe/)
 
-The goal is straightforward: remove friction and offer quick, calm structure when things feel out of control. It’s not a medical tool and doesn’t replace professional help—just a fast, accessible support for the moment.
 
-## Project Structure
+Open the link and start right away. The page shows a clear breathing rhythm with no distractions, so you can follow along without thinking.
+
+This is a supportive self-help tool, not a medical service. If your symptoms are severe or recurring, please reach out to a qualified healthcare professional or local emergency services.
+
+## What it does
+
+* Guided breathing animation with adjustable speed
+* Short prompts/quotes synced to breathing (adjustable frequency)
+* Light/dark theme
+* Optional background music (playback speed follows breathing BPM)
+* 4 languages: Russian, Ukrainian, English, German
+* Mobile-friendly controls and gestures (including pinch)
+
+## Features
+
+* Zero-build static app: no framework, no bundler, no backend
+* Canvas-based breathing engine (`assets/js/breath.js`)
+* UI, settings, and i18n logic (`assets/js/script.js`)
+* Localization via `i18n/<lang>/messages.txt` and `i18n/<lang>/ui.txt`
+* Privacy-first by design: no accounts, no trackers, no cookies required by app logic
+* Basic accessibility: localized `aria-label` values for key controls
+
+<details>
+<summary>Project structure</summary>
 
 ```text
 .
+├─ robots.txt
+├─ favicon.ico
+├─ icon.svg
+├─ favicon-32x32.png
+├─ apple-touch-icon.png
+├─ android-chrome-192x192.png
 ├─ index.html
 ├─ assets/
+│  ├─ audio/
+│  │  └─ music/
+│  │     ├─ ambient-loop-120s-fade_64k.opus
+│  │     ├─ ambient-loop-120s-fade_128k.mp3
+│  │     ├─ ambient-meditation_quietphase_pixabay_485723.mp3
+│  │     ├─ SOURCES.md
+│  │     └─ Content License Summary - Pixabay.pdf
 │  ├─ css/
 │  │  └─ styles.css
 │  └─ js/
 │     ├─ breath.js
 │     └─ script.js
 ├─ i18n/
-│  ├─ en/
-│  │  ├─ messages.txt
-│  │  └─ ui.txt
-│  ├─ ru/
-│  │  ├─ messages.txt
-│  │  └─ ui.txt
-│  ├─ uk/
-│  │  ├─ messages.txt
-│  │  └─ ui.txt
-│  └─ de/
-│     ├─ messages.txt
-│     └─ ui.txt
+│  ├─ en/ (messages.txt, ui.txt)
+│  ├─ ru/ (messages.txt, ui.txt)
+│  ├─ uk/ (messages.txt, ui.txt)
+│  └─ de/ (messages.txt, ui.txt)
 ├─ .gitattributes
 ├─ .gitignore
+├─ LICENSE
 └─ README.md
 ```
 
-## Technical Notes
+</details>
 
-- **Zero-build static app**: no framework, no bundler, no backend required.
-- **Canvas-based breathing animation** in `assets/js/breath.js` with configurable breathing speed (BPM).
-- **UI and i18n logic** in `assets/js/script.js`:
-  - language switching with persistence via `localStorage`
-  - async loading of localized content from `i18n/<lang>/...`
-  - race-safe language loading (latest selection wins)
-- **Localization files**:
-  - `messages.txt` for rotating breathing prompts
-  - `ui.txt` for interface labels and descriptions
-- **Accessible controls**:
-  - language and settings panels
-  - localized `aria-label` values for key controls
-- **Privacy-first by design**:
-  - no accounts, no trackers, no cookies required by app logic.
+## Running locally (optional)
 
-## Run Locally
+For some browsers, opening `index.html` directly (via `file://`) may work.
+If translations don’t load or anything behaves strangely, run a local server instead:
 
-Because translations are loaded with `fetch`, run through a local server (not `file://`).
-
-Examples:
+**VS Code:** install the “Live Server” extension and use **Open with Live Server**.
 
 ```bash
 # Python 3
@@ -66,15 +80,17 @@ python -m http.server 8080
 npx serve .
 ```
 
-Then open:
+Then open `http://localhost:8080`.
 
-- `http://localhost:8080` (Python)
-- URL printed by `serve`
+## Roadmap
 
-## Browser Support
+* Preset breathing patterns (e.g., box breathing, 4-7-8)
+* Offline-friendly PWA mode
 
-Works in current versions of major modern browsers on desktop and mobile (Chrome, Edge, Firefox, Safari).
+## Attribution
 
-## Disclaimer
+Audio sources and licenses are listed in `assets/audio/music/SOURCES.md`.
 
-This project is a supportive self-help tool and not a medical service. In case of severe or recurring symptoms, contact a qualified healthcare professional or local emergency services.
+## Feedback
+
+Suggestions are welcome. You can open a GitHub issue — or email me if that’s easier.
