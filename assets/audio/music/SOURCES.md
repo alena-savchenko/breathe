@@ -1,5 +1,12 @@
 # Audio sources
 
+## Production files used by the app
+
+- Primary (modern browsers): **ambient-loop-120s-fade_64k.opus**
+- Fallback (older browsers): **ambient-loop-120s-fade_128k.mp3**
+- Integration: loaded in `<audio>` as **Opus first, MP3 fallback**
+- Purpose: short web loop for faster page performance and lower transfer size
+
 ## Ambient Meditation — QuietPhase (Pixabay)
 
 - Title: **Ambient Meditation**
@@ -15,3 +22,11 @@
 - Additional note: **Content ID Registered** (as shown on the track page)
 
 Downloaded for use in the “Breath” project on **2026-02-26**.
+
+### Local file mapping
+
+- Original downloaded track (archive/source, not used in runtime):
+  - **ambient-meditation_quietphase_pixabay_485723.mp3**
+- Web-ready loop files used in runtime:
+  - **ambient-loop-120s-fade_64k.opus**
+  - **ambient-loop-120s-fade_128k.mp3**
