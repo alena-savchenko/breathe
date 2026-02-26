@@ -2,7 +2,7 @@
 (function () {
   const DEFAULT_LANG = 'ru';
   const DEFAULT_THEME = 'light';
-  const MESSAGE_DURATION_CYCLES = 2;
+  const DEFAULT_MESSAGE_DURATION_CYCLES = 2;
   const TWO_PI = Math.PI * 2;
 
   const SUPPORTED_LANGS = [
@@ -65,6 +65,7 @@
   let uiLoadToken = 0;
   let messageStartPhase = null;
   let isMessageTransitioning = false;
+  let messageDurationCycles = DEFAULT_MESSAGE_DURATION_CYCLES;
 
   // DOM-элементы
   let textEl;
@@ -72,6 +73,8 @@
   let langToggle, langPanel, langClose, langList;
   let musicToggle, bgMusic;
   let musicVolumeSlider, musicVolumeValueEl;
+  let quoteCyclesSlider, quoteCyclesValueEl;
+  let lineWidthSlider, lineWidthValueEl;
   let speedSlider, speedValueEl;
   let themeToggle;
 
@@ -221,9 +224,9 @@
       messageStartPhase = currentPhase;
     }
 
-    const totalPhase = MESSAGE_DURATION_CYCLES * TWO_PI;
+    const totalPhase = messageDurationCycles * TWO_PI;
     const progress = clamp((currentPhase - messageStartPhase) / totalPhase, 0, 1);
-    const fillPercent = progress * 100;
+    const fillPercent = (progress * 98) + 2;
     textEl.style.setProperty('--fill', fillPercent + '%');
 
     if (progress >= 0.96) {
@@ -276,7 +279,7 @@
 
     if (
       currentMessageIndex < messages.length - 1 &&
-      cyclesSinceChange >= MESSAGE_DURATION_CYCLES
+      cyclesSinceChange >= messageDurationCycles
     ) {
       advanceToNextMessage();
     }
@@ -356,6 +359,13 @@
     setHtml('i18n-settings-breathsPerMinute-hint', 'settings.breathsPerMinute.hint', ['br']);
     setHtml('i18n-settings-theme-title', 'settings.theme.title');
     setHtml('i18n-settings-theme-hint', 'settings.theme.hint', ['br']);
+    setHtml('i18n-settings-other-title', 'settings.other.title');
+    setHtml('i18n-settings-quoteCycles-title', 'settings.quoteCycles.title');
+    setHtml('i18n-settings-quoteCycles-label', 'settings.quoteCycles.label');
+    setHtml('i18n-settings-quoteCycles-hint', 'settings.quoteCycles.hint', ['br']);
+    setHtml('i18n-settings-lineWidth-title', 'settings.lineWidth.title');
+    setHtml('i18n-settings-lineWidth-label', 'settings.lineWidth.label');
+    setHtml('i18n-settings-lineWidth-hint', 'settings.lineWidth.hint', ['br']);
     setHtml('i18n-settings-musicVolume-title', 'settings.musicVolume.title');
     setHtml('i18n-settings-musicVolume-label', 'settings.musicVolume.label');
     setHtml('i18n-settings-musicVolume-hint', 'settings.musicVolume.hint', ['br']);
@@ -543,6 +553,51 @@
     });
   }
 
+  function initQuoteCyclesSlider() {
+    if (!quoteCyclesSlider || !quoteCyclesValueEl) return;
+
+    const initialCycles = clamp(
+      parseInt(quoteCyclesSlider.value || String(DEFAULT_MESSAGE_DURATION_CYCLES), 10) || DEFAULT_MESSAGE_DURATION_CYCLES,
+      1,
+      5
+    );
+
+    messageDurationCycles = initialCycles;
+    quoteCyclesSlider.value = String(initialCycles);
+    quoteCyclesValueEl.textContent = String(initialCycles);
+
+    quoteCyclesSlider.addEventListener('input', () => {
+      const cycles = clamp(parseInt(quoteCyclesSlider.value || '2', 10) || 2, 1, 5);
+      messageDurationCycles = cycles;
+      quoteCyclesValueEl.textContent = String(cycles);
+      resetMessageFill();
+    });
+  }
+
+  function initLineWidthSlider() {
+    if (!lineWidthSlider || !lineWidthValueEl || !window.BreathApp) return;
+
+    const initialWidth = clamp(
+      parseInt(lineWidthSlider.value || '6', 10) || 6,
+      2,
+      28
+    );
+
+    lineWidthSlider.value = String(initialWidth);
+    lineWidthValueEl.textContent = String(initialWidth);
+    if (typeof window.BreathApp.setLineWidth === 'function') {
+      window.BreathApp.setLineWidth(initialWidth);
+    }
+
+    lineWidthSlider.addEventListener('input', () => {
+      const width = clamp(parseInt(lineWidthSlider.value || '6', 10) || 6, 2, 28);
+      lineWidthValueEl.textContent = String(width);
+      if (typeof window.BreathApp.setLineWidth === 'function') {
+        window.BreathApp.setLineWidth(width);
+      }
+    });
+  }
+
   function applyTheme(theme, persist) {
     currentTheme = theme === 'dark' ? 'dark' : 'light';
 
@@ -718,6 +773,10 @@
     speedValueEl = document.getElementById('speedValue');
     musicVolumeSlider = document.getElementById('musicVolumeSlider');
     musicVolumeValueEl = document.getElementById('musicVolumeValue');
+    quoteCyclesSlider = document.getElementById('quoteCyclesSlider');
+    quoteCyclesValueEl = document.getElementById('quoteCyclesValue');
+    lineWidthSlider = document.getElementById('lineWidthSlider');
+    lineWidthValueEl = document.getElementById('lineWidthValue');
     themeToggle = document.getElementById('themeToggle');
 
     // Обработчики шторок
@@ -754,6 +813,8 @@
     // UI-часть
     renderLangList();
     initBreathingSpeedFromSlider();
+    initQuoteCyclesSlider();
+    initLineWidthSlider();
     initMusicVolumeSlider();
     applyTheme(currentTheme, false);
     setMusicEnabled(false);

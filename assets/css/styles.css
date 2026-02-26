@@ -27,6 +27,8 @@
   --switch-on-bg: #4a7bff;
   --switch-thumb: #ffffff;
 
+  --other-settings-bg: #f1f3f7;
+
   --quote-base: #38393b;
   --quote-fill-blue: #4f8dff;
   --quote-fill-violet: #8a59ff;
@@ -59,9 +61,8 @@ body.theme-dark {
 
   --switch-off-bg: #4c5d7a;
   --switch-on-bg: #82a3ff;
+  --other-settings-bg: #242d3d;
   --quote-base: #d7deeb;
-  --quote-fill-blue: #7891bd;
-  --quote-fill-violet: #8f83bb;
   --quote-fill-blue: #7ab0ff;
   --quote-fill-violet: #b38cff;
 }
@@ -89,18 +90,17 @@ body {
   bottom: 28px;
   transform: translateX(-50%);
   width: min(1200px, 90vw);
-    --fill-softness: 8%;
+  --fill-softness: 8%;
   text-align: center;
   font-size: 24px;
   line-height: 1.5;
-    --fill: 1%;
-    --fill-softness: 10%;
+  --fill: 1%;
   color: var(--quote-base);
   background-image: linear-gradient(
     to right,
-      var(--quote-fill-blue) 0,
-      var(--quote-fill-violet) var(--fill),
-      var(--quote-base) calc(var(--fill) + var(--fill-softness)),
+    var(--quote-fill-blue) 0,
+    var(--quote-fill-violet) var(--fill),
+    var(--quote-base) calc(var(--fill) + var(--fill-softness)),
     var(--quote-base) 100%
   );
   -webkit-background-clip: text;
@@ -236,6 +236,7 @@ canvas {
 .settings-header h2 {
   font-size: 18px;
   margin: 0;
+  color: var(--text-strong);
 }
 
 .settings-close {
@@ -253,6 +254,7 @@ canvas {
   line-height: 1.5;
   color: var(--text-main);
   overflow-y: auto;
+  scrollbar-gutter: stable both-edges;
 }
 
 /* Языковой список */
@@ -357,6 +359,46 @@ canvas {
   height: 1px;
   background: var(--hr-color);
   margin: 20px 0;
+}
+
+.other-settings {
+  border: 1px solid var(--panel-divider);
+  border-radius: 12px;
+  background: var(--other-settings-bg);
+  padding: 0 12px 8px;
+  margin-bottom: 10px;
+}
+
+.other-settings summary {
+  list-style: none;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-strong);
+  padding: 12px 0;
+}
+
+.other-settings summary::-webkit-details-marker {
+  display: none;
+}
+
+.other-settings summary::after {
+  content: '▾';
+  float: right;
+  opacity: 0.8;
+  transition: transform 0.2s ease;
+}
+
+.other-settings[open] summary::after {
+  transform: rotate(180deg);
+}
+
+.other-settings-content {
+  padding-bottom: 4px;
+}
+
+.other-settings-content h3 {
+  margin-top: 8px;
 }
 
 .theme-row {

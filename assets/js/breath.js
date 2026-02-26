@@ -27,14 +27,14 @@
     autoColorIdle: 'rgba(80, 150, 255, 0.5)',
     autoColorSynced: 'rgba(80, 150, 255, 0.9)',
     autoGlowColor: 'rgba(80,150,255,0.9)',
-    autoGradientIdle: ['rgba(70, 130, 255, 0.55)', 'rgba(122, 182, 255, 0.45)'],
-    autoGradientSynced: ['rgba(70, 130, 255, 0.98)', 'rgba(140, 205, 255, 0.9)'],
+    autoGradientIdle: ['rgba(64, 122, 255, 0.52)', 'rgba(110, 170, 255, 0.7)', 'rgba(150, 206, 255, 0.42)'],
+    autoGradientSynced: ['rgba(70, 130, 255, 0.9)', 'rgba(125, 188, 255, 1)', 'rgba(175, 222, 255, 0.88)'],
 
     userColorIdle: 'rgba(180, 80, 255, 0.6)',
     userColorSynced: 'rgba(180, 80, 255, 0.95)',
     userGlowColor: 'rgba(200,120,255,0.9)',
-    userGradientIdle: ['rgba(154, 92, 255, 0.64)', 'rgba(212, 132, 255, 0.52)'],
-    userGradientSynced: ['rgba(164, 96, 255, 0.98)', 'rgba(226, 150, 255, 0.92)']
+    userGradientIdle: ['rgba(148, 90, 255, 0.58)', 'rgba(194, 120, 255, 0.74)', 'rgba(230, 155, 255, 0.5)'],
+    userGradientSynced: ['rgba(160, 95, 255, 0.9)', 'rgba(214, 138, 255, 1)', 'rgba(238, 176, 255, 0.9)']
   };
 
   const THEME_COLORS = {
@@ -268,6 +268,8 @@
       lineWidth = SETTINGS.lineWidth,
       color = 'rgba(0,0,0,0.6)',
       gradientColors = null,
+      gradientShift = 0,
+      shimmerSpeed = 0.9,
       noiseAmp = 6,
       noiseFreq = 5,
       noiseSpeed = 1,
@@ -278,14 +280,23 @@
     ctx.save();
     ctx.lineWidth = lineWidth;
     if (Array.isArray(gradientColors) && gradientColors.length >= 2) {
+      const angle = time * shimmerSpeed + gradientShift;
+      const dx = Math.cos(angle) * radius;
+      const dy = Math.sin(angle) * radius;
       const gradient = ctx.createLinearGradient(
-        cx - radius,
-        cy - radius,
-        cx + radius,
-        cy + radius
+        cx - dx,
+        cy - dy,
+        cx + dx,
+        cy + dy
       );
       gradient.addColorStop(0, gradientColors[0]);
-      gradient.addColorStop(1, gradientColors[1]);
+      if (gradientColors.length >= 3) {
+        const middle = 0.35 + 0.3 * (0.5 + 0.5 * Math.sin(time * (shimmerSpeed * 1.3) + gradientShift));
+        gradient.addColorStop(middle, gradientColors[1]);
+        gradient.addColorStop(1, gradientColors[2]);
+      } else {
+        gradient.addColorStop(1, gradientColors[1]);
+      }
       ctx.strokeStyle = gradient;
     } else {
       ctx.strokeStyle = color;
@@ -410,6 +421,8 @@
     drawWobblyCircle(r1, tSec, {
       color: autoColor,
       gradientColors: autoGradient,
+      gradientShift: 0,
+      shimmerSpeed: 0.85,
       noiseAmp: SETTINGS.autoNoise.amp,
       noiseFreq: SETTINGS.autoNoise.freq,
       noiseSpeed: SETTINGS.autoNoise.speed,
@@ -429,6 +442,8 @@
     drawWobblyCircle(userRadius, tSec + 10, {
       color: userColor,
       gradientColors: userGradient,
+      gradientShift: 1.8,
+      shimmerSpeed: 1.1,
       noiseAmp: SETTINGS.userNoise.amp,
       noiseFreq: SETTINGS.userNoise.freq,
       noiseSpeed: SETTINGS.userNoise.speed,
@@ -453,6 +468,15 @@
 
   function getTheme() {
     return currentTheme;
+  }
+
+  function setLineWidth(width) {
+    const safeWidth = Math.max(1, Number(width) || 1);
+    SETTINGS.lineWidth = safeWidth;
+  }
+
+  function getLineWidth() {
+    return SETTINGS.lineWidth;
   }
 
   function setBreathingSpeedBpm(bpm) {
@@ -480,6 +504,8 @@
     setTheme,
     getTheme,
     getPhaseAngle,
+    setLineWidth,
+    getLineWidth,
     setBreathingSpeedBpm,
     getBreathingSpeedBpm,
     onCycle

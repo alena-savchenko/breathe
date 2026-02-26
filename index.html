@@ -116,26 +116,75 @@
 
       <hr>
 
-      <h3 id="i18n-settings-musicVolume-title">Music volume</h3>
+      <details id="otherSettings" class="other-settings">
+        <summary id="i18n-settings-other-title">Other settings</summary>
 
-      <label for="musicVolumeSlider" class="slider-label">
-        <span id="i18n-settings-musicVolume-label">Volume:</span>
-        <span id="musicVolumeValue">0%</span>
-      </label>
+        <div class="other-settings-content">
+          <h3 id="i18n-settings-musicVolume-title">Music volume</h3>
 
-      <input
-        id="musicVolumeSlider"
-        type="range"
-        min="0"
-        max="100"
-        step="1"
-        value="0"
-        class="slider"
-      />
+          <label for="musicVolumeSlider" class="slider-label">
+            <span id="i18n-settings-musicVolume-label">Volume:</span>
+            <span id="musicVolumeValue">0%</span>
+          </label>
 
-      <p id="i18n-settings-musicVolume-hint" class="slider-hint">
-        At 0% music is off.
-      </p>
+          <input
+            id="musicVolumeSlider"
+            type="range"
+            min="0"
+            max="100"
+            step="1"
+            value="0"
+            class="slider"
+          />
+
+          <p id="i18n-settings-musicVolume-hint" class="slider-hint">
+            At 0% music is off.
+          </p>
+
+          <h3 id="i18n-settings-quoteCycles-title">Quote change speed</h3>
+
+          <label for="quoteCyclesSlider" class="slider-label">
+            <span id="i18n-settings-quoteCycles-label">Cycles per quote:</span>
+            <span id="quoteCyclesValue">2</span>
+          </label>
+
+          <input
+            id="quoteCyclesSlider"
+            type="range"
+            min="1"
+            max="5"
+            step="1"
+            value="2"
+            class="slider"
+          />
+
+          <p id="i18n-settings-quoteCycles-hint" class="slider-hint">
+            Number of breathing cycles before switching to the next quote.
+          </p>
+
+          <h3 id="i18n-settings-lineWidth-title">Line thickness</h3>
+
+          <label for="lineWidthSlider" class="slider-label">
+            <span id="i18n-settings-lineWidth-label">Canvas line width:</span>
+            <span id="lineWidthValue">6</span>
+          </label>
+
+          <input
+            id="lineWidthSlider"
+            type="range"
+            min="2"
+            max="28"
+            step="1"
+            value="6"
+            class="slider"
+          />
+
+          <p id="i18n-settings-lineWidth-hint" class="slider-hint">
+            Adjust the thickness of both breathing lines.
+          </p>
+
+        </div>
+      </details>
     </div>
   </aside>
 
