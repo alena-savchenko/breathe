@@ -7,10 +7,15 @@ language.hint=Оберіть мову інтерфейсу:
 # Labels
 settings.breathsPerMinute.label=Вдихів на хвилину:
 settings.breathsPerMinute.hint=Повільне дихання (4–12 вдихів на хвилину) може допомогти заспокоїти нервову систему.|Стеж за рухом кіл і рухай повзунок, доки ритм не стане комфортним.
-settings.theme.label=Темна тема
+settings.theme.title=Темна тема
 settings.theme.hint=Темна тема знижує яскравість екрана та комфортніша за слабкого освітлення.
 settings.theme.ariaLabel=Перемкнути темну тему
+settings.musicVolume.title=Гучність музики
+settings.musicVolume.label=Гучність:
+settings.musicVolume.hint=За 0% музику вимкнено.
 buttons.langToggle.ariaLabel=Обрати мову
+buttons.musicToggleOn.ariaLabel=Вимкнути музику
+buttons.musicToggleOff.ariaLabel=Увімкнути музику
 buttons.settingsToggle.ariaLabel=Налаштування
 
 # About block

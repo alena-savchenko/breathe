@@ -29,6 +29,22 @@
     </svg>
   </button>
 
+  <!-- Кнопка музыки -->
+  <button id="musicToggle" class="music-toggle" aria-label="Enable music" aria-pressed="false">
+    <svg class="music-icon-off" width="24" height="24" viewBox="0 0 24 24"
+         fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M11 5 6 9H3v6h3l5 4z"/>
+      <line x1="17" y1="9" x2="21" y2="13"/>
+      <line x1="21" y1="9" x2="17" y2="13"/>
+    </svg>
+    <svg class="music-icon-on" width="24" height="24" viewBox="0 0 24 24"
+         fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <path d="M11 5 6 9H3v6h3l5 4z"/>
+      <path d="M15 9a5 5 0 0 1 0 6"/>
+      <path d="M18.5 6.5a9 9 0 0 1 0 11"/>
+    </svg>
+  </button>
+
   <!-- Кнопка настроек -->
   <button id="settingsToggle" class="settings-toggle" aria-label="Settings">
     <svg width="24" height="24" viewBox="0 0 24 24"
@@ -85,8 +101,9 @@
 
       <hr>
 
+      <h3 id="i18n-settings-theme-title">Dark theme</h3>
+
       <div class="theme-row">
-        <span id="i18n-settings-theme-label">Dark theme</span>
         <label class="theme-switch" for="themeToggle">
           <input id="themeToggle" type="checkbox" />
           <span class="theme-switch-slider" aria-hidden="true"></span>
@@ -96,6 +113,29 @@
       <p id="i18n-settings-theme-hint" class="slider-hint">
         Dark theme lowers screen brightness and is more comfortable in low light.
       </p>
+
+      <hr>
+
+      <h3 id="i18n-settings-musicVolume-title">Music volume</h3>
+
+      <label for="musicVolumeSlider" class="slider-label">
+        <span id="i18n-settings-musicVolume-label">Volume:</span>
+        <span id="musicVolumeValue">0%</span>
+      </label>
+
+      <input
+        id="musicVolumeSlider"
+        type="range"
+        min="0"
+        max="100"
+        step="1"
+        value="0"
+        class="slider"
+      />
+
+      <p id="i18n-settings-musicVolume-hint" class="slider-hint">
+        At 0% music is off.
+      </p>
     </div>
   </aside>
 
@@ -104,6 +144,10 @@
 
   <!-- Canvas -->
   <canvas id="breathCanvas"></canvas>
+
+  <audio id="bgMusic" preload="auto" loop>
+    <source src="./assets/audio/music/ambient-meditation_quietphase_pixabay_485723.mp3" type="audio/mpeg" />
+  </audio>
 
   <!-- Цитаты под анимацией -->
   <div id="breathText" class="breath-text"></div>

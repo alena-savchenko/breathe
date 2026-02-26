@@ -7,10 +7,15 @@ language.hint=Выберите язык интерфейса:
 # Labels
 settings.breathsPerMinute.label=Вдохов в минуту:
 settings.breathsPerMinute.hint=Медленное дыхание (4–12 вдохов в минуту) может помочь нервной системе успокоиться.|Следите за движением кругов и двигайте ползунок, пока ритм не станет комфортным.
-settings.theme.label=Тёмная тема
+settings.theme.title=Тёмная тема
 settings.theme.hint=Тёмная тема снижает яркость экрана и комфортнее в условиях слабого освещения.
 settings.theme.ariaLabel=Переключить тёмную тему
+settings.musicVolume.title=Громкость музыки
+settings.musicVolume.label=Громкость:
+settings.musicVolume.hint=При 0% музыка выключена.
 buttons.langToggle.ariaLabel=Выбрать язык
+buttons.musicToggleOn.ariaLabel=Выключить музыку
+buttons.musicToggleOff.ariaLabel=Включить музыку
 buttons.settingsToggle.ariaLabel=Настройки
 
 # About block

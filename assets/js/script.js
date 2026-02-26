@@ -66,8 +66,20 @@
   let textEl;
   let settingsToggle, settingsPanel, settingsBackdrop, settingsClose;
   let langToggle, langPanel, langClose, langList;
+  let musicToggle, bgMusic;
+  let musicVolumeSlider, musicVolumeValueEl;
   let speedSlider, speedValueEl;
   let themeToggle;
+
+  // Музыка
+  let isMusicEnabled = false;
+  let musicFadeFrame = 0;
+  let musicPlayToken = 0;
+  let isMusicLoadRequested = false;
+
+  const MUSIC_FADE_IN_MS = 900;
+  const MUSIC_START_VOLUME = 0.06;
+  const DEFAULT_MUSIC_VOLUME_PERCENT = 35;
 
   // ===== Парсеры текстов =====
   function parseMessagesText(text) {
@@ -282,8 +294,11 @@
 
     setHtml('i18n-settings-breathsPerMinute-label', 'settings.breathsPerMinute.label');
     setHtml('i18n-settings-breathsPerMinute-hint', 'settings.breathsPerMinute.hint', ['br']);
-    setHtml('i18n-settings-theme-label', 'settings.theme.label');
+    setHtml('i18n-settings-theme-title', 'settings.theme.title');
     setHtml('i18n-settings-theme-hint', 'settings.theme.hint', ['br']);
+    setHtml('i18n-settings-musicVolume-title', 'settings.musicVolume.title');
+    setHtml('i18n-settings-musicVolume-label', 'settings.musicVolume.label');
+    setHtml('i18n-settings-musicVolume-hint', 'settings.musicVolume.hint', ['br']);
 
     setHtml('i18n-description-title', 'description.title');
     setHtml('i18n-description-body', 'description.body', ['br']);
@@ -291,6 +306,181 @@
     setAriaLabel('langToggle', 'buttons.langToggle.ariaLabel');
     setAriaLabel('settingsToggle', 'buttons.settingsToggle.ariaLabel');
     setAriaLabel('themeToggle', 'settings.theme.ariaLabel');
+    updateMusicToggleAriaLabel();
+  }
+
+  function clamp(value, min, max) {
+    return value < min ? min : value > max ? max : value;
+  }
+
+  function getMusicVolumeFromSlider() {
+    if (!musicVolumeSlider) return 0;
+    const raw = parseInt(musicVolumeSlider.value || '0', 10);
+    const safe = Number.isFinite(raw) ? raw : 0;
+    return clamp(safe, 0, 100) / 100;
+  }
+
+  function updateMusicVolumeLabel(volume01) {
+    if (!musicVolumeValueEl) return;
+    const percent = Math.round(clamp(volume01, 0, 1) * 100);
+    musicVolumeValueEl.textContent = percent + '%';
+  }
+
+  function ensureMusicLoadRequested() {
+    if (!bgMusic || isMusicLoadRequested) return;
+    isMusicLoadRequested = true;
+    try {
+      bgMusic.load();
+    } catch (_) {}
+  }
+
+  function cancelMusicFade() {
+    if (musicFadeFrame) {
+      cancelAnimationFrame(musicFadeFrame);
+      musicFadeFrame = 0;
+    }
+  }
+
+  function fadeMusicVolumeTo(targetVolume, durationMs) {
+    if (!bgMusic) return;
+
+    cancelMusicFade();
+
+    const startVolume = clamp(bgMusic.volume, 0, 1);
+    const endVolume = clamp(targetVolume, 0, 1);
+    const startTime = performance.now();
+    const duration = Math.max(1, durationMs || 1);
+
+    function step(now) {
+      const progress = clamp((now - startTime) / duration, 0, 1);
+      bgMusic.volume = startVolume + (endVolume - startVolume) * progress;
+
+      if (progress < 1 && isMusicEnabled) {
+        musicFadeFrame = requestAnimationFrame(step);
+      } else {
+        musicFadeFrame = 0;
+        bgMusic.volume = endVolume;
+      }
+    }
+
+    musicFadeFrame = requestAnimationFrame(step);
+  }
+
+  function updateMusicPlaybackRate() {
+    if (!bgMusic || !speedSlider) return;
+
+    const bpm = parseInt(speedSlider.value || '6', 10);
+    const safeBpm = Number.isFinite(bpm) ? bpm : 6;
+    const baseBpm = 6;
+    const ratio = safeBpm / baseBpm;
+    const minRate = 0.5;
+    const maxRate = 2;
+
+    bgMusic.playbackRate = Math.min(maxRate, Math.max(minRate, ratio));
+  }
+
+  function updateMusicToggleAriaLabel() {
+    if (!musicToggle) return;
+
+    const key = isMusicEnabled
+      ? 'buttons.musicToggleOn.ariaLabel'
+      : 'buttons.musicToggleOff.ariaLabel';
+
+    const fallback = isMusicEnabled ? 'Disable music' : 'Enable music';
+    const value = uiStrings[key] || fallback;
+    musicToggle.setAttribute('aria-label', value);
+    musicToggle.setAttribute('aria-pressed', isMusicEnabled ? 'true' : 'false');
+  }
+
+  function setMusicEnabled(enabled) {
+    if (!musicToggle || !bgMusic) return;
+
+    const token = ++musicPlayToken;
+    const nextEnabled = !!enabled;
+    let targetVolume = getMusicVolumeFromSlider();
+
+    if (nextEnabled && targetVolume <= 0 && musicVolumeSlider) {
+      musicVolumeSlider.value = String(DEFAULT_MUSIC_VOLUME_PERCENT);
+      targetVolume = getMusicVolumeFromSlider();
+      updateMusicVolumeLabel(targetVolume);
+    }
+
+    if (!nextEnabled || targetVolume <= 0) {
+      cancelMusicFade();
+      bgMusic.pause();
+      isMusicEnabled = false;
+      musicToggle.classList.remove('is-on');
+      updateMusicToggleAriaLabel();
+      return;
+    }
+
+    ensureMusicLoadRequested();
+    updateMusicPlaybackRate();
+    cancelMusicFade();
+    bgMusic.volume = Math.min(MUSIC_START_VOLUME, targetVolume);
+    const playResult = bgMusic.play();
+
+    if (playResult && typeof playResult.then === 'function') {
+      playResult
+        .then(() => {
+          if (token !== musicPlayToken) return;
+          isMusicEnabled = true;
+          musicToggle.classList.add('is-on');
+          updateMusicToggleAriaLabel();
+          fadeMusicVolumeTo(targetVolume, MUSIC_FADE_IN_MS);
+        })
+        .catch((err) => {
+          if (token !== musicPlayToken) return;
+          isMusicEnabled = false;
+          musicToggle.classList.remove('is-on');
+          updateMusicToggleAriaLabel();
+          console.warn('Не удалось запустить музыку:', err);
+        });
+      return;
+    }
+
+    isMusicEnabled = !bgMusic.paused;
+    if (isMusicEnabled) {
+      musicToggle.classList.add('is-on');
+      updateMusicToggleAriaLabel();
+      fadeMusicVolumeTo(targetVolume, MUSIC_FADE_IN_MS);
+    } else {
+      musicToggle.classList.remove('is-on');
+      updateMusicToggleAriaLabel();
+    }
+  }
+
+  function toggleMusic() {
+    ensureMusicLoadRequested();
+    setMusicEnabled(!isMusicEnabled);
+  }
+
+  function initMusicVolumeSlider() {
+    if (!musicVolumeSlider) return;
+
+    const initialVolume = getMusicVolumeFromSlider();
+    updateMusicVolumeLabel(initialVolume);
+
+    musicVolumeSlider.addEventListener('input', () => {
+      const volume = getMusicVolumeFromSlider();
+      updateMusicVolumeLabel(volume);
+
+      if (volume <= 0) {
+        setMusicEnabled(false);
+        return;
+      }
+
+      if (!isMusicEnabled) {
+        ensureMusicLoadRequested();
+        setMusicEnabled(true);
+        return;
+      }
+
+      if (bgMusic && isMusicEnabled) {
+        cancelMusicFade();
+        bgMusic.volume = volume;
+      }
+    });
   }
 
   function applyTheme(theme, persist) {
@@ -433,11 +623,13 @@
     const initialBpm = parseInt(speedSlider.value || String(defaultBpm), 10);
     speedValueEl.textContent = initialBpm;
     window.BreathApp.setBreathingSpeedBpm(initialBpm);
+    updateMusicPlaybackRate();
 
     speedSlider.addEventListener('input', () => {
       const bpm = parseInt(speedSlider.value, 10);
       speedValueEl.textContent = bpm;
       window.BreathApp.setBreathingSpeedBpm(bpm);
+      updateMusicPlaybackRate();
     });
   }
 
@@ -456,18 +648,23 @@
     settingsClose = document.getElementById('settingsClose');
 
     langToggle = document.getElementById('langToggle');
+    musicToggle = document.getElementById('musicToggle');
     langPanel = document.getElementById('langPanel');
     langClose = document.getElementById('langClose');
     langList = document.getElementById('langList');
+    bgMusic = document.getElementById('bgMusic');
 
     speedSlider = document.getElementById('speedSlider');
     speedValueEl = document.getElementById('speedValue');
+    musicVolumeSlider = document.getElementById('musicVolumeSlider');
+    musicVolumeValueEl = document.getElementById('musicVolumeValue');
     themeToggle = document.getElementById('themeToggle');
 
     // Обработчики шторок
     if (settingsToggle) settingsToggle.addEventListener('click', toggleSettings);
     if (settingsClose) settingsClose.addEventListener('click', closeSettings);
     if (langToggle) langToggle.addEventListener('click', toggleLangPanel);
+    if (musicToggle) musicToggle.addEventListener('click', toggleMusic);
     if (langClose) langClose.addEventListener('click', closeLangPanel);
 
     if (settingsBackdrop) {
@@ -496,7 +693,9 @@
     // UI-часть
     renderLangList();
     initBreathingSpeedFromSlider();
+    initMusicVolumeSlider();
     applyTheme(currentTheme, false);
+    setMusicEnabled(false);
 
     // Загрузка текстов
     applyLanguage(currentLang);

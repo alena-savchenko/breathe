@@ -100,6 +100,7 @@ canvas {
 
 /* Одинаковые кнопки (язык и настройки) */
 .lang-toggle,
+.music-toggle,
 .settings-toggle {
   position: absolute;
   top: 20px;
@@ -123,17 +124,20 @@ canvas {
 }
 
 .lang-toggle:hover,
+.music-toggle:hover,
 .settings-toggle:hover {
   background: var(--control-bg-hover);
 }
 
 .lang-toggle:active,
+.music-toggle:active,
 .settings-toggle:active {
   transform: scale(0.94);
 }
 
 /* Светлые иконки */
 .lang-toggle svg,
+.music-toggle svg,
 .settings-toggle svg {
   stroke: var(--control-icon);
   stroke-width: 1.6;
@@ -144,8 +148,24 @@ canvas {
   right: 20px;
 }
 
-.lang-toggle {
+.music-toggle {
   right: 92px;
+}
+
+.lang-toggle {
+  right: 164px;
+}
+
+.music-icon-on {
+  display: none;
+}
+
+.music-toggle.is-on .music-icon-off {
+  display: none;
+}
+
+.music-toggle.is-on .music-icon-on {
+  display: block;
 }
 
 /* Бекдроп под шторками */
@@ -321,8 +341,9 @@ canvas {
 .theme-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 12px;
+  margin-top: 2px;
   margin-bottom: 8px;
   color: var(--text-strong);
   font-size: 14px;
@@ -404,6 +425,7 @@ canvas {
   }
 
   .lang-toggle,
+  .music-toggle,
   .settings-toggle {
     width: 52px;
     height: 52px;
@@ -414,8 +436,12 @@ canvas {
     right: 16px;
   }
 
-  .lang-toggle {
+  .music-toggle {
     right: 84px;
+  }
+
+  .lang-toggle {
+    right: 152px;
   }
 
   .description {
