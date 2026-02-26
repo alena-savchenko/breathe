@@ -76,9 +76,11 @@ body {
 /* Текст над анимацией */
 .breath-text {
   position: absolute;
-  top: 48px;
-  left: 0;
-  width: 100%;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  width: min(1200px, 90vw);
+  margin: 0;
   text-align: center;
   font-size: 24px;
   line-height: 1.5;
@@ -86,8 +88,9 @@ body {
   opacity: 0;
   transition: opacity 1s ease;
   pointer-events: none;
-  padding: 0 16px;
+  padding: 0;
   box-sizing: border-box;
+  z-index: 5;
 }
 
 canvas {
@@ -396,8 +399,8 @@ canvas {
 @media (max-width: 480px) {
   .breath-text {
     font-size: 20px;
-    top: 44px;
-    padding: 0 12px;
+    width: 90vw;
+    bottom: 20px;
   }
 
   .lang-toggle,
