@@ -7,6 +7,10 @@
 
   <meta name="theme-color" content="#ffffff" />
 
+  <link rel="preload" href="./assets/css/styles.css" as="style" />
+  <link rel="preload" href="./i18n/en/messages.txt" as="fetch" crossorigin />
+  <link rel="preload" href="./i18n/en/ui.txt" as="fetch" crossorigin />
+
   <link rel="icon" href="./favicon.ico" sizes="any" />
   <link rel="icon" type="image/svg+xml" href="./icon.svg" />
   <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png" />
@@ -19,7 +23,10 @@
 
 <meta name="keywords" content="breathe online, online breathing tool, calm down now, calm panic attack, stop panic attack, help with panic attack, breathing for anxiety, anxiety attack breathing exercise, slow breathing exercise, deep breathing exercise, guided breathing, grounding exercise, calm breathing app, regulate nervous system, how to stop hyperventilating, relax quickly, breathing circle, box breathing, 4-7-8 breathing, stress relief breathing">
 
-  <link rel="stylesheet" href="./assets/css/styles.css" />
+  <link rel="stylesheet" href="./assets/css/styles.css" media="print" onload="this.media='all'" />
+  <noscript>
+    <link rel="stylesheet" href="./assets/css/styles.css" />
+  </noscript>
 </head>
 
 <body>
@@ -61,7 +68,7 @@
   </button>
 
   <!-- Шторка выбора языка -->
-  <aside id="langPanel" class="settings-panel" aria-hidden="true">
+  <aside id="langPanel" class="settings-panel" aria-hidden="true" inert>
     <header class="settings-header">
       <h2 id="i18n-language-title">Language</h2>
       <button id="langClose" class="settings-close">✕</button>
@@ -75,7 +82,7 @@
   </aside>
 
   <!-- Шторка настроек -->
-  <aside id="settingsPanel" class="settings-panel" aria-hidden="true">
+  <aside id="settingsPanel" class="settings-panel" aria-hidden="true" inert>
     <header class="settings-header">
       <h2 id="i18n-settings-title">Settings</h2>
       <button id="settingsClose" class="settings-close">✕</button>
@@ -197,30 +204,32 @@
   <!-- Общий полупрозрачный фон под шторками -->
   <div id="settingsBackdrop" class="settings-backdrop"></div>
 
-  <!-- Canvas -->
-  <canvas id="breathCanvas"></canvas>
+  <main id="mainContent">
+    <!-- Canvas -->
+    <canvas id="breathCanvas"></canvas>
 
-  <audio id="bgMusic" preload="none" loop playsinline>
-    <source src="./assets/audio/music/ambient-loop-120s-fade_64k.opus" type="audio/ogg; codecs=opus" />
-    <source src="./assets/audio/music/ambient-loop-120s-fade_128k.mp3" type="audio/mpeg" />
-  </audio>
+    <audio id="bgMusic" preload="none" loop playsinline>
+      <source src="./assets/audio/music/ambient-loop-120s-fade_64k.opus" type="audio/ogg; codecs=opus" />
+      <source src="./assets/audio/music/ambient-loop-120s-fade_128k.mp3" type="audio/mpeg" />
+    </audio>
 
-  <!-- Цитаты под анимацией -->
-  <div id="breathText" class="breath-text">Breathe…</div>
+    <!-- Цитаты под анимацией -->
+    <div id="breathText" class="breath-text">Breathe…</div>
 
-  <!-- Нижний блок -->
-  <div class="description">
-    <h1 id="i18n-description-title">About</h1>
-    <p id="i18n-description-body">
-      This breathing tool helps you regulate your state through slow,
-      rhythmic breathing with visual feedback. More features coming soon:
-      themes, sound, expanded practices, multilingual support, and more.
-    </p>
-  </div>
+    <!-- Нижний блок -->
+    <div class="description">
+      <h1 id="i18n-description-title">About</h1>
+      <p id="i18n-description-body">
+        This breathing tool helps you regulate your state through slow,
+        rhythmic breathing with visual feedback. More features coming soon:
+        themes, sound, expanded practices, multilingual support, and more.
+      </p>
+    </div>
+  </main>
 
   <!-- JS: сначала анимация, потом UI / i18n -->
-  <script src="./assets/js/breath.js"></script>
-  <script src="./assets/js/script.js"></script>
+  <script defer src="./assets/js/breath.js"></script>
+  <script defer src="./assets/js/script.js"></script>
 
 </body>
 </html>

@@ -2,7 +2,7 @@
   --page-bg: #ffffff;
   --text-main: #444;
   --text-strong: #333;
-  --text-muted: #555;
+  --text-muted: #4c5669;
 
   --control-bg: rgba(255, 255, 255, 0.92);
   --control-bg-hover: rgba(255, 255, 255, 1);
@@ -38,7 +38,7 @@ body.theme-dark {
   --page-bg: #10141d;
   --text-main: #d8dde8;
   --text-strong: #ecf1ff;
-  --text-muted: #b6bfd3;
+  --text-muted: #c4cde0;
 
   --control-bg: rgba(23, 30, 43, 0.88);
   --control-bg-hover: rgba(30, 39, 55, 0.96);
@@ -292,7 +292,7 @@ canvas {
 
 .lang-button span.code {
   font-size: 12px;
-  opacity: 0.7;
+  opacity: 0.92;
 }
 
 .lang-button.active {

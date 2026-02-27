@@ -94,3 +94,8 @@ Audio sources and licenses are listed in `assets/audio/music/SOURCES.md`.
 ## Feedback
 
 Suggestions are welcome. You can open a GitHub issue — or email me if that’s easier.
+
+### Release Note (localStorage)
+
+When you ship breaking UI/state changes, update `STORAGE_SCHEMA_VERSION` in `assets/js/script.js`.
+Use full ISO datetime format, for example: `2026-02-27T00:00:00Z`.

@@ -1,23 +1,70 @@
 // script.js
 (function () {
-  const DEFAULT_LANG = 'ru';
+  const DEFAULT_LANG = 'en';
   const DEFAULT_THEME = 'light';
   const DEFAULT_MESSAGE_DURATION_CYCLES = 2;
   const TWO_PI = Math.PI * 2;
+  const STORAGE_SCHEMA_VERSION = '2026-02-27T00:00:00Z';
+  const STORAGE_VERSION_KEY = 'breath_storage_version';
+
+  function ensureStorageSchemaVersion() {
+    try {
+      const current = localStorage.getItem(STORAGE_VERSION_KEY);
+      if (current === STORAGE_SCHEMA_VERSION) return;
+
+      const keysToRemove = [];
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('breath_')) {
+          keysToRemove.push(key);
+        }
+      }
+
+      keysToRemove.forEach((key) => {
+        localStorage.removeItem(key);
+      });
+
+      localStorage.setItem(STORAGE_VERSION_KEY, STORAGE_SCHEMA_VERSION);
+    } catch (_) {}
+  }
+
+  ensureStorageSchemaVersion();
 
   const SUPPORTED_LANGS = [
+    { code: 'en', label: 'English' },
     { code: 'ru', label: 'Русский' },
     { code: 'uk', label: 'Українська' },
-    { code: 'en', label: 'English' },
     { code: 'de', label: 'Deutsch' }
   ];
 
   function getInitialLang() {
+    const codes = SUPPORTED_LANGS.map(l => l.code);
+
     try {
       const stored = localStorage.getItem('breath_lang');
-      const codes = SUPPORTED_LANGS.map(l => l.code);
       if (stored && codes.includes(stored)) return stored;
     } catch (_) {}
+
+    try {
+      const candidates = [];
+      if (Array.isArray(navigator.languages) && navigator.languages.length) {
+        candidates.push(...navigator.languages);
+      }
+      if (navigator.language) {
+        candidates.push(navigator.language);
+      }
+
+      for (const raw of candidates) {
+        const normalized = String(raw || '').toLowerCase();
+        if (!normalized) continue;
+
+        if (codes.includes(normalized)) return normalized;
+
+        const base = normalized.split('-')[0];
+        if (codes.includes(base)) return base;
+      }
+    } catch (_) {}
+
     return DEFAULT_LANG;
   }
 
@@ -637,6 +684,8 @@
     }
     settingsPanel.classList.remove('open');
     settingsPanel.setAttribute('aria-hidden', 'true');
+    settingsPanel.setAttribute('inert', '');
+    if (settingsToggle) settingsToggle.setAttribute('aria-expanded', 'false');
     updateBackdropVisibility();
   }
 
@@ -644,6 +693,8 @@
     closeLangPanel();
     settingsPanel.classList.add('open');
     settingsPanel.setAttribute('aria-hidden', 'false');
+    settingsPanel.removeAttribute('inert');
+    if (settingsToggle) settingsToggle.setAttribute('aria-expanded', 'true');
     updateBackdropVisibility();
   }
 
@@ -665,6 +716,8 @@
     }
     langPanel.classList.remove('open');
     langPanel.setAttribute('aria-hidden', 'true');
+    langPanel.setAttribute('inert', '');
+    if (langToggle) langToggle.setAttribute('aria-expanded', 'false');
     updateBackdropVisibility();
   }
 
@@ -672,6 +725,8 @@
     closeSettings();
     langPanel.classList.add('open');
     langPanel.setAttribute('aria-hidden', 'false');
+    langPanel.removeAttribute('inert');
+    if (langToggle) langToggle.setAttribute('aria-expanded', 'true');
     updateBackdropVisibility();
   }
 
@@ -783,6 +838,9 @@
     if (settingsToggle) settingsToggle.addEventListener('click', toggleSettings);
     if (settingsClose) settingsClose.addEventListener('click', closeSettings);
     if (langToggle) langToggle.addEventListener('click', toggleLangPanel);
+      if (settingsToggle) settingsToggle.setAttribute('aria-expanded', 'false');
+      if (langToggle) langToggle.setAttribute('aria-expanded', 'false');
+
     if (musicToggle) musicToggle.addEventListener('click', toggleMusic);
     if (langClose) langClose.addEventListener('click', closeLangPanel);
 
