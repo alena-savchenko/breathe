@@ -3,6 +3,7 @@ settings.title=Settings
 settings.breathingSpeed.title=Breathing speed
 language.title=Language
 language.hint=Choose interface language:
+keyboard.hint=This site is easy to use with a keyboard: use Tab to move between controls, and arrow keys for lists and sliders.
 
 # Labels
 settings.breathsPerMinute.label=Breaths per minute:
@@ -10,6 +11,19 @@ settings.breathsPerMinute.hint=Slow breathing (4–12 breaths per minute) can he
 settings.theme.title=Dark theme
 settings.theme.hint=Dark theme lowers screen brightness and feels more comfortable in low light.
 settings.theme.ariaLabel=Toggle dark theme
+settings.accessibility.title=Special needs
+settings.highContrast.title=High contrast mode
+settings.highContrast.hint=Improves readability with stronger text and interface contrast.
+settings.highContrast.ariaLabel=Toggle high contrast mode
+settings.largeText.title=Large text
+settings.largeText.hint=Increases text size while keeping layout readable on all screens.
+settings.largeText.ariaLabel=Toggle large text mode
+settings.noGradients.title=Disable gradients
+settings.noGradients.hint=Quotes switch without fill effect, and canvas lines become solid color.
+settings.noGradients.ariaLabel=Toggle no-gradients mode
+settings.bionicFont.title=Bionic font
+settings.bionicFont.hint=Applies a reading-friendly font to all site text, including quotes and settings.
+settings.bionicFont.ariaLabel=Toggle bionic font
 settings.other.title=Other settings
 settings.quoteCycles.title=Quote change speed
 settings.quoteCycles.label=Cycles per quote:

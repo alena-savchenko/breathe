@@ -3,6 +3,7 @@ settings.title=Einstellungen
 settings.breathingSpeed.title=Atemgeschwindigkeit
 language.title=Sprache
 language.hint=Sprache der Oberfläche auswählen:
+keyboard.hint=Diese Website lässt sich bequem mit der Tastatur bedienen: Mit Tab zwischen Elementen wechseln, Pfeiltasten für Listen und Regler verwenden.
 
 # Labels
 settings.breathsPerMinute.label=Atemzüge pro Minute:
@@ -10,6 +11,19 @@ settings.breathsPerMinute.hint=Langsames Atmen (4–12 Atemzüge pro Minute) kan
 settings.theme.title=Dunkles Design
 settings.theme.hint=Das dunkle Design reduziert die Bildschirmhelligkeit und ist bei wenig Licht angenehmer.
 settings.theme.ariaLabel=Dunkles Design umschalten
+settings.accessibility.title=Besondere Bedürfnisse
+settings.highContrast.title=Hoher Kontrast
+settings.highContrast.hint=Verbessert die Lesbarkeit durch stärkeren Kontrast bei Text und Bedienelementen.
+settings.highContrast.ariaLabel=Modus mit hohem Kontrast umschalten
+settings.largeText.title=Große Schrift
+settings.largeText.hint=Vergrößert die Schrift und hält das Layout auf allen Bildschirmen gut lesbar.
+settings.largeText.ariaLabel=Große Schrift umschalten
+settings.noGradients.title=Verläufe deaktivieren
+settings.noGradients.hint=Zitate wechseln ohne Fülleffekt, und die Linien auf der Leinwand werden einfarbig.
+settings.noGradients.ariaLabel=Modus ohne Verläufe umschalten
+settings.bionicFont.title=Bionische Schrift
+settings.bionicFont.hint=Wendet eine leseunterstützende Schrift auf alle Website-Texte an, einschließlich Zitate und Einstellungen.
+settings.bionicFont.ariaLabel=Bionische Schrift umschalten
 settings.other.title=Weitere Einstellungen
 settings.quoteCycles.title=Zitatwechsel-Geschwindigkeit
 settings.quoteCycles.label=Zyklen pro Zitat:

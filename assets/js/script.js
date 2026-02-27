@@ -3,6 +3,10 @@
   const DEFAULT_LANG = 'en';
   const DEFAULT_THEME = 'light';
   const DEFAULT_MESSAGE_DURATION_CYCLES = 2;
+  const DEFAULT_HIGH_CONTRAST = false;
+  const DEFAULT_LARGE_TEXT = false;
+  const DEFAULT_NO_GRADIENTS = false;
+  const DEFAULT_BIONIC_FONT = false;
   const TWO_PI = Math.PI * 2;
   const STORAGE_SCHEMA_VERSION = '2026-02-27T00:00:00Z';
   const STORAGE_VERSION_KEY = 'breath_storage_version';
@@ -40,8 +44,15 @@
   function getInitialLang() {
     const codes = SUPPORTED_LANGS.map(l => l.code);
 
+    function normalizeLocale(value) {
+      return String(value || '')
+        .trim()
+        .toLowerCase()
+        .replace(/_/g, '-');
+    }
+
     try {
-      const stored = localStorage.getItem('breath_lang');
+      const stored = normalizeLocale(localStorage.getItem('breath_lang'));
       if (stored && codes.includes(stored)) return stored;
     } catch (_) {}
 
@@ -55,7 +66,7 @@
       }
 
       for (const raw of candidates) {
-        const normalized = String(raw || '').toLowerCase();
+        const normalized = normalizeLocale(raw);
         if (!normalized) continue;
 
         if (codes.includes(normalized)) return normalized;
@@ -124,6 +135,10 @@
   let lineWidthSlider, lineWidthValueEl;
   let speedSlider, speedValueEl;
   let themeToggle;
+  let highContrastToggle;
+  let largeTextToggle;
+  let noGradientsToggle;
+  let bionicFontToggle;
 
   // Музыка
   let isMusicEnabled = false;
@@ -134,6 +149,14 @@
   const MUSIC_FADE_IN_MS = 900;
   const MUSIC_START_VOLUME = 0.06;
   const DEFAULT_MUSIC_VOLUME_PERCENT = 35;
+  const KEYBOARD_HINT_HIDE_DELAY_MS = 10000;
+
+  let isHighContrastEnabled = DEFAULT_HIGH_CONTRAST;
+  let isLargeTextEnabled = DEFAULT_LARGE_TEXT;
+  let isNoGradientsEnabled = DEFAULT_NO_GRADIENTS;
+  let isBionicFontEnabled = DEFAULT_BIONIC_FONT;
+  let keyboardHintEl;
+  let hasKeyboardTabStarted = false;
 
   // ===== Парсеры текстов =====
   function parseMessagesText(text) {
@@ -217,6 +240,15 @@
   // ===== Работа с текстом над анимацией =====
   function setTextWithFade(newHtml) {
     if (!textEl) return;
+
+    if (isNoGradientsEnabled) {
+      textEl.innerHTML = sanitizeHtml(newHtml, ['br']);
+      textEl.style.setProperty('--fill', '100%');
+      textEl.style.opacity = 1;
+      isMessageTransitioning = false;
+      return;
+    }
+
     textEl.style.opacity = 0;
     setTimeout(() => {
       textEl.innerHTML = sanitizeHtml(newHtml, ['br']);
@@ -254,6 +286,11 @@
 
   function resetMessageFill() {
     if (!textEl) return;
+    if (isNoGradientsEnabled) {
+      textEl.style.setProperty('--fill', '100%');
+      messageStartPhase = null;
+      return;
+    }
     textEl.style.setProperty('--fill', '1%');
     const phase = getCurrentPhaseAngle();
     messageStartPhase = phase == null ? null : phase;
@@ -263,6 +300,11 @@
     requestAnimationFrame(updateMessageFillLoop);
 
     if (!textEl || !messages.length) return;
+
+    if (isNoGradientsEnabled) {
+      textEl.style.setProperty('--fill', '100%');
+      return;
+    }
 
     const currentPhase = getCurrentPhaseAngle();
     if (currentPhase == null) return;
@@ -398,6 +440,7 @@
 
     setHtml('i18n-language-title', 'language.title');
     setHtml('i18n-language-hint', 'language.hint');
+    setHtml('i18n-keyboard-hint', 'keyboard.hint');
 
     setHtml('i18n-settings-title', 'settings.title');
     setHtml('i18n-settings-breathingSpeed-title', 'settings.breathingSpeed.title');
@@ -406,6 +449,15 @@
     setHtml('i18n-settings-breathsPerMinute-hint', 'settings.breathsPerMinute.hint', ['br']);
     setHtml('i18n-settings-theme-title', 'settings.theme.title');
     setHtml('i18n-settings-theme-hint', 'settings.theme.hint', ['br']);
+    setHtml('i18n-settings-accessibility-title', 'settings.accessibility.title');
+    setHtml('i18n-settings-highContrast-title', 'settings.highContrast.title');
+    setHtml('i18n-settings-highContrast-hint', 'settings.highContrast.hint', ['br']);
+    setHtml('i18n-settings-largeText-title', 'settings.largeText.title');
+    setHtml('i18n-settings-largeText-hint', 'settings.largeText.hint', ['br']);
+    setHtml('i18n-settings-noGradients-title', 'settings.noGradients.title');
+    setHtml('i18n-settings-noGradients-hint', 'settings.noGradients.hint', ['br']);
+    setHtml('i18n-settings-bionicFont-title', 'settings.bionicFont.title');
+    setHtml('i18n-settings-bionicFont-hint', 'settings.bionicFont.hint', ['br']);
     setHtml('i18n-settings-other-title', 'settings.other.title');
     setHtml('i18n-settings-quoteCycles-title', 'settings.quoteCycles.title');
     setHtml('i18n-settings-quoteCycles-label', 'settings.quoteCycles.label');
@@ -423,11 +475,151 @@
     setAriaLabel('langToggle', 'buttons.langToggle.ariaLabel');
     setAriaLabel('settingsToggle', 'buttons.settingsToggle.ariaLabel');
     setAriaLabel('themeToggle', 'settings.theme.ariaLabel');
+    setAriaLabel('highContrastToggle', 'settings.highContrast.ariaLabel');
+    setAriaLabel('largeTextToggle', 'settings.largeText.ariaLabel');
+    setAriaLabel('noGradientsToggle', 'settings.noGradients.ariaLabel');
+    setAriaLabel('bionicFontToggle', 'settings.bionicFont.ariaLabel');
     updateMusicToggleAriaLabel();
   }
 
   function clamp(value, min, max) {
     return value < min ? min : value > max ? max : value;
+  }
+
+  function hasStoredKey(key) {
+    try {
+      return localStorage.getItem(key) !== null;
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function mediaQueryMatches(query) {
+    try {
+      return !!(window.matchMedia && window.matchMedia(query).matches);
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function getSystemHighContrastPreference() {
+    return (
+      mediaQueryMatches('(prefers-contrast: more)') ||
+      mediaQueryMatches('(forced-colors: active)')
+    );
+  }
+
+  function getSystemReducedMotionPreference() {
+    return mediaQueryMatches('(prefers-reduced-motion: reduce)');
+  }
+
+  function readStoredBool(key, defaultValue) {
+    try {
+      const raw = localStorage.getItem(key);
+      if (raw === '1' || raw === 'true') return true;
+      if (raw === '0' || raw === 'false') return false;
+    } catch (_) {}
+    return !!defaultValue;
+  }
+
+  function writeStoredBool(key, value) {
+    try {
+      localStorage.setItem(key, value ? '1' : '0');
+    } catch (_) {}
+  }
+
+  function applyHighContrast(enabled, persist) {
+    isHighContrastEnabled = !!enabled;
+    document.body.classList.toggle('high-contrast', isHighContrastEnabled);
+    if (highContrastToggle) {
+      highContrastToggle.checked = isHighContrastEnabled;
+    }
+    if (persist !== false) {
+      writeStoredBool('breath_high_contrast', isHighContrastEnabled);
+    }
+  }
+
+  function applyLargeText(enabled, persist) {
+    isLargeTextEnabled = !!enabled;
+    document.body.classList.toggle('large-text', isLargeTextEnabled);
+    if (largeTextToggle) {
+      largeTextToggle.checked = isLargeTextEnabled;
+    }
+    if (persist !== false) {
+      writeStoredBool('breath_large_text', isLargeTextEnabled);
+    }
+  }
+
+  function applyNoGradients(enabled, persist) {
+    isNoGradientsEnabled = !!enabled;
+    document.body.classList.toggle('no-gradients', isNoGradientsEnabled);
+
+    if (noGradientsToggle) {
+      noGradientsToggle.checked = isNoGradientsEnabled;
+    }
+
+    if (window.BreathApp && typeof window.BreathApp.setGradientsEnabled === 'function') {
+      window.BreathApp.setGradientsEnabled(!isNoGradientsEnabled);
+    }
+
+    if (isNoGradientsEnabled) {
+      if (textEl) {
+        textEl.style.setProperty('--fill', '100%');
+      }
+    } else {
+      resetMessageFill();
+    }
+
+    if (persist !== false) {
+      writeStoredBool('breath_no_gradients', isNoGradientsEnabled);
+    }
+  }
+
+  function applyBionicFont(enabled, persist) {
+    isBionicFontEnabled = !!enabled;
+    document.body.classList.toggle('bionic-font', isBionicFontEnabled);
+    if (bionicFontToggle) {
+      bionicFontToggle.checked = isBionicFontEnabled;
+    }
+    if (persist !== false) {
+      writeStoredBool('breath_bionic_font', isBionicFontEnabled);
+    }
+  }
+
+  function initializeSpecialNeedsPreferences() {
+    const hasHighContrast = hasStoredKey('breath_high_contrast');
+    const hasLargeText = hasStoredKey('breath_large_text');
+    const hasNoGradients = hasStoredKey('breath_no_gradients');
+    const hasBionicFont = hasStoredKey('breath_bionic_font');
+
+    isHighContrastEnabled = hasHighContrast
+      ? readStoredBool('breath_high_contrast', DEFAULT_HIGH_CONTRAST)
+      : getSystemHighContrastPreference();
+
+    isLargeTextEnabled = hasLargeText
+      ? readStoredBool('breath_large_text', DEFAULT_LARGE_TEXT)
+      : DEFAULT_LARGE_TEXT;
+
+    isNoGradientsEnabled = hasNoGradients
+      ? readStoredBool('breath_no_gradients', DEFAULT_NO_GRADIENTS)
+      : getSystemReducedMotionPreference();
+
+    isBionicFontEnabled = hasBionicFont
+      ? readStoredBool('breath_bionic_font', DEFAULT_BIONIC_FONT)
+      : DEFAULT_BIONIC_FONT;
+
+    if (!hasHighContrast) {
+      writeStoredBool('breath_high_contrast', isHighContrastEnabled);
+    }
+    if (!hasLargeText) {
+      writeStoredBool('breath_large_text', isLargeTextEnabled);
+    }
+    if (!hasNoGradients) {
+      writeStoredBool('breath_no_gradients', isNoGradientsEnabled);
+    }
+    if (!hasBionicFont) {
+      writeStoredBool('breath_bionic_font', isBionicFontEnabled);
+    }
   }
 
   function getMusicVolumeFromSlider() {
@@ -674,6 +866,16 @@
   }
 
   // ===== Шторки (настройки и язык) =====
+  function focusFirstInteractive(container) {
+    if (!container) return;
+    const target = container.querySelector(
+      'button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), summary, [tabindex]:not([tabindex="-1"])'
+    );
+    if (target && typeof target.focus === 'function') {
+      target.focus();
+    }
+  }
+
   function closeSettings() {
     if (
       document.activeElement &&
@@ -696,6 +898,9 @@
     settingsPanel.removeAttribute('inert');
     if (settingsToggle) settingsToggle.setAttribute('aria-expanded', 'true');
     updateBackdropVisibility();
+    requestAnimationFrame(() => {
+      focusFirstInteractive(settingsPanel);
+    });
   }
 
   function toggleSettings() {
@@ -728,6 +933,9 @@
     langPanel.removeAttribute('inert');
     if (langToggle) langToggle.setAttribute('aria-expanded', 'true');
     updateBackdropVisibility();
+    requestAnimationFrame(() => {
+      focusFirstInteractive(langPanel);
+    });
   }
 
   function toggleLangPanel() {
@@ -779,6 +987,138 @@
     });
   }
 
+  function moveLangFocus(step) {
+    if (!langPanel || !langPanel.classList.contains('open')) return;
+
+    const buttons = Array.from(langPanel.querySelectorAll('.lang-button'));
+    if (!buttons.length) return;
+
+    const currentIndex = buttons.indexOf(document.activeElement);
+    const fallbackIndex = Math.max(0, buttons.findIndex((btn) => btn.classList.contains('active')));
+    const startIndex = currentIndex >= 0 ? currentIndex : fallbackIndex;
+    const nextIndex = (startIndex + step + buttons.length) % buttons.length;
+    buttons[nextIndex].focus();
+  }
+
+  function isTypingTarget(target) {
+    if (!target) return false;
+    if (target.isContentEditable) return true;
+    const tag = (target.tagName || '').toLowerCase();
+    return tag === 'input' || tag === 'textarea' || tag === 'select';
+  }
+
+  function getFocusableElements(container) {
+    if (!container) return [];
+
+    const selector = [
+      'a[href]',
+      'button:not([disabled])',
+      'input:not([disabled]):not([type="hidden"])',
+      'select:not([disabled])',
+      'textarea:not([disabled])',
+      'summary',
+      '[tabindex]:not([tabindex="-1"])'
+    ].join(',');
+
+    return Array.from(container.querySelectorAll(selector)).filter((el) => {
+      if (el.hasAttribute('inert')) return false;
+      const style = window.getComputedStyle(el);
+      if (style.display === 'none' || style.visibility === 'hidden') return false;
+      if (el.closest('[inert]')) return false;
+      if (el.closest('details:not([open])') && !el.matches('summary')) return false;
+      return true;
+    });
+  }
+
+  function handleTabCycleForList(e, elements) {
+    if (!elements || !elements.length) return false;
+
+    const first = elements[0];
+    const last = elements[elements.length - 1];
+    const active = document.activeElement;
+    const isInside = elements.includes(active);
+
+    if (!isInside) {
+      e.preventDefault();
+      (e.shiftKey ? last : first).focus();
+      return true;
+    }
+
+    if (!e.shiftKey && active === last) {
+      e.preventDefault();
+      first.focus();
+      return true;
+    }
+
+    if (e.shiftKey && active === first) {
+      e.preventDefault();
+      last.focus();
+      return true;
+    }
+
+    return false;
+  }
+
+  function getOpenPanel() {
+    if (settingsPanel && settingsPanel.classList.contains('open')) return settingsPanel;
+    if (langPanel && langPanel.classList.contains('open')) return langPanel;
+    return null;
+  }
+
+  function getTopControlButtons() {
+    return [langToggle, musicToggle, settingsToggle].filter(Boolean);
+  }
+
+  function initKeyboardHintAutoHide() {
+    if (!keyboardHintEl) return;
+
+    requestAnimationFrame(() => {
+      if (!keyboardHintEl) return;
+      keyboardHintEl.classList.add('is-visible');
+      keyboardHintEl.classList.remove('is-hidden');
+    });
+
+    window.setTimeout(() => {
+      if (!keyboardHintEl) return;
+      keyboardHintEl.classList.remove('is-visible');
+      keyboardHintEl.classList.add('is-hidden');
+    }, KEYBOARD_HINT_HIDE_DELAY_MS);
+  }
+
+  function hasMeaningfulFocus() {
+    const active = document.activeElement;
+    return !!active && active !== document.body && active !== document.documentElement;
+  }
+
+  function handleTabNavigation(e) {
+    if (e.key !== 'Tab') return;
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+
+    if (!hasKeyboardTabStarted) {
+      hasKeyboardTabStarted = true;
+      const openPanel = getOpenPanel();
+      const topControls = getTopControlButtons();
+      const active = document.activeElement;
+      const activeInTopControls = topControls.includes(active);
+
+      if (!openPanel && !activeInTopControls && langToggle) {
+        e.preventDefault();
+        langToggle.focus({ preventScroll: true });
+        return;
+      }
+    }
+
+    const openPanel = getOpenPanel();
+    if (openPanel) {
+      const focusables = getFocusableElements(openPanel);
+      handleTabCycleForList(e, focusables);
+      return;
+    }
+
+    const topControls = getTopControlButtons();
+    handleTabCycleForList(e, topControls);
+  }
+
   // ===== Ползунок скорости =====
   function initBreathingSpeedFromSlider() {
     const defaultBpm = 6;
@@ -816,6 +1156,7 @@
     settingsPanel = document.getElementById('settingsPanel');
     settingsBackdrop = document.getElementById('settingsBackdrop');
     settingsClose = document.getElementById('settingsClose');
+    keyboardHintEl = document.getElementById('keyboardHint');
 
     langToggle = document.getElementById('langToggle');
     musicToggle = document.getElementById('musicToggle');
@@ -833,6 +1174,10 @@
     lineWidthSlider = document.getElementById('lineWidthSlider');
     lineWidthValueEl = document.getElementById('lineWidthValue');
     themeToggle = document.getElementById('themeToggle');
+    highContrastToggle = document.getElementById('highContrastToggle');
+    largeTextToggle = document.getElementById('largeTextToggle');
+    noGradientsToggle = document.getElementById('noGradientsToggle');
+    bionicFontToggle = document.getElementById('bionicFontToggle');
 
     // Обработчики шторок
     if (settingsToggle) settingsToggle.addEventListener('click', toggleSettings);
@@ -857,12 +1202,54 @@
       });
     }
 
+    if (highContrastToggle) {
+      highContrastToggle.addEventListener('change', () => {
+        applyHighContrast(highContrastToggle.checked, true);
+      });
+    }
+
+    if (largeTextToggle) {
+      largeTextToggle.addEventListener('change', () => {
+        applyLargeText(largeTextToggle.checked, true);
+      });
+    }
+
+    if (noGradientsToggle) {
+      noGradientsToggle.addEventListener('change', () => {
+        applyNoGradients(noGradientsToggle.checked, true);
+      });
+    }
+
+    if (bionicFontToggle) {
+      bionicFontToggle.addEventListener('change', () => {
+        applyBionicFont(bionicFontToggle.checked, true);
+      });
+    }
+
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         closeSettings();
         closeLangPanel();
+        return;
       }
+
+      if (e.key === 'ArrowDown' && langPanel && langPanel.classList.contains('open')) {
+        e.preventDefault();
+        moveLangFocus(1);
+        return;
+      }
+
+      if (e.key === 'ArrowUp' && langPanel && langPanel.classList.contains('open')) {
+        e.preventDefault();
+        moveLangFocus(-1);
+        return;
+      }
+
+      if (e.altKey || e.ctrlKey || e.metaKey) return;
+      if (isTypingTarget(e.target)) return;
     });
+
+    window.addEventListener('keydown', handleTabNavigation, true);
 
     // Связь с анимацией: обновление текста по выбранному числу циклов
     window.BreathApp.onCycle(handleCycleAdvance);
@@ -874,8 +1261,14 @@
     initQuoteCyclesSlider();
     initLineWidthSlider();
     initMusicVolumeSlider();
+    initializeSpecialNeedsPreferences();
     applyTheme(currentTheme, false);
+    applyHighContrast(isHighContrastEnabled, false);
+    applyLargeText(isLargeTextEnabled, false);
+    applyNoGradients(isNoGradientsEnabled, false);
+    applyBionicFont(isBionicFontEnabled, false);
     setMusicEnabled(false);
+    initKeyboardHintAutoHide();
 
     // Загрузка текстов
     applyLanguage(currentLang);

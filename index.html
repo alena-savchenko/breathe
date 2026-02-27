@@ -6,8 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <meta name="theme-color" content="#ffffff" />
-
-  <link rel="preload" href="./assets/css/styles.css" as="style" />
+  <link rel="stylesheet" href="./assets/css/styles.css" />
   <link rel="preload" href="./i18n/en/messages.txt" as="fetch" crossorigin />
   <link rel="preload" href="./i18n/en/ui.txt" as="fetch" crossorigin />
 
@@ -23,10 +22,6 @@
 
 <meta name="keywords" content="breathe online, online breathing tool, calm down now, calm panic attack, stop panic attack, help with panic attack, breathing for anxiety, anxiety attack breathing exercise, slow breathing exercise, deep breathing exercise, guided breathing, grounding exercise, calm breathing app, regulate nervous system, how to stop hyperventilating, relax quickly, breathing circle, box breathing, 4-7-8 breathing, stress relief breathing">
 
-  <link rel="stylesheet" href="./assets/css/styles.css" media="print" onload="this.media='all'" />
-  <noscript>
-    <link rel="stylesheet" href="./assets/css/styles.css" />
-  </noscript>
 </head>
 
 <body>
@@ -66,6 +61,12 @@
       <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33A1.65 1.65 0 0 0 9 3.09V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82 1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/>
     </svg>
   </button>
+
+  <div id="keyboardHint" class="keyboard-hint" role="status" aria-live="polite">
+    <p id="i18n-keyboard-hint">
+      Keyboard: use Tab to move between controls and arrow keys in lists/sliders.
+    </p>
+  </div>
 
   <!-- Шторка выбора языка -->
   <aside id="langPanel" class="settings-panel" aria-hidden="true" inert>
@@ -126,6 +127,66 @@
       <p id="i18n-settings-theme-hint" class="slider-hint">
         Dark theme lowers screen brightness and is more comfortable in low light.
       </p>
+
+      <hr>
+
+      <details id="accessibilitySettings" class="other-settings">
+        <summary id="i18n-settings-accessibility-title">Special needs</summary>
+
+        <div class="other-settings-content">
+          <h3 id="i18n-settings-highContrast-title">High contrast mode</h3>
+
+          <div class="theme-row">
+            <label class="theme-switch" for="highContrastToggle">
+              <input id="highContrastToggle" type="checkbox" />
+              <span class="theme-switch-slider" aria-hidden="true"></span>
+            </label>
+          </div>
+
+          <p id="i18n-settings-highContrast-hint" class="slider-hint">
+            Improves readability with stronger text and UI contrast.
+          </p>
+
+          <h3 id="i18n-settings-largeText-title">Large text</h3>
+
+          <div class="theme-row">
+            <label class="theme-switch" for="largeTextToggle">
+              <input id="largeTextToggle" type="checkbox" />
+              <span class="theme-switch-slider" aria-hidden="true"></span>
+            </label>
+          </div>
+
+          <p id="i18n-settings-largeText-hint" class="slider-hint">
+            Increases text size while keeping layout readable on all screens.
+          </p>
+
+          <h3 id="i18n-settings-noGradients-title">Disable gradients</h3>
+
+          <div class="theme-row">
+            <label class="theme-switch" for="noGradientsToggle">
+              <input id="noGradientsToggle" type="checkbox" />
+              <span class="theme-switch-slider" aria-hidden="true"></span>
+            </label>
+          </div>
+
+          <p id="i18n-settings-noGradients-hint" class="slider-hint">
+            Quotes switch without fill effect, and canvas lines become solid color.
+          </p>
+
+          <h3 id="i18n-settings-bionicFont-title">Bionic font</h3>
+
+          <div class="theme-row">
+            <label class="theme-switch" for="bionicFontToggle">
+              <input id="bionicFontToggle" type="checkbox" />
+              <span class="theme-switch-slider" aria-hidden="true"></span>
+            </label>
+          </div>
+
+          <p id="i18n-settings-bionicFont-hint" class="slider-hint">
+            Applies a bionic-friendly reading font to all site text, including quotes and settings.
+          </p>
+        </div>
+      </details>
 
       <hr>
 

@@ -49,6 +49,7 @@
   };
 
   let currentTheme = 'light';
+  let gradientsEnabled = true;
 
   const canvas = document.getElementById('breathCanvas');
   const ctx = canvas.getContext('2d');
@@ -279,7 +280,7 @@
 
     ctx.save();
     ctx.lineWidth = lineWidth;
-    if (Array.isArray(gradientColors) && gradientColors.length >= 2) {
+    if (gradientsEnabled && Array.isArray(gradientColors) && gradientColors.length >= 2) {
       const angle = time * shimmerSpeed + gradientShift;
       const dx = Math.cos(angle) * radius;
       const dy = Math.sin(angle) * radius;
@@ -479,6 +480,14 @@
     return SETTINGS.lineWidth;
   }
 
+  function setGradientsEnabled(enabled) {
+    gradientsEnabled = enabled !== false;
+  }
+
+  function getGradientsEnabled() {
+    return gradientsEnabled;
+  }
+
   function setBreathingSpeedBpm(bpm) {
     const safeBpm = Math.max(1, Number(bpm) || 1);
     const now = performance.now();
@@ -506,6 +515,8 @@
     getPhaseAngle,
     setLineWidth,
     getLineWidth,
+    setGradientsEnabled,
+    getGradientsEnabled,
     setBreathingSpeedBpm,
     getBreathingSpeedBpm,
     onCycle
