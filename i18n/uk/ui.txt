@@ -4,6 +4,9 @@ settings.breathingSpeed.title=Швидкість дихання
 language.title=Мова
 language.hint=Оберіть мову інтерфейсу:
 keyboard.hint=Цим сайтом зручно керувати з клавіатури: використовуйте Tab для переходу між елементами, а стрілки — для списків і повзунків.
+tutorial.step1=Це Breath slow.|Стеж за фігурою й дихай у її ритмі.
+tutorial.step2=Фіолетовою лінією можна керувати мишкою або пальцем.|Спробуй зараз.
+tutorial.step3=На сайті є корисні налаштування, зокрема підказки для навігації з клавіатури.|Відкрий «Налаштування», коли будеш готовий(а).
 
 # Labels
 settings.breathsPerMinute.label=Вдихів на хвилину:
@@ -31,6 +34,10 @@ settings.quoteCycles.hint=Кількість циклів дихання до п
 settings.lineWidth.title=Товщина ліній
 settings.lineWidth.label=Товщина ліній:
 settings.lineWidth.hint=Налаштування товщини обох ліній дихання.
+settings.tutorialReplay.title=Короткий туторіал
+settings.tutorialReplay.button=Показати навчання знову
+settings.tutorialReplay.hint=Запускає короткі підказки першого входу.
+settings.tutorialReplay.ariaLabel=Показати навчання знову
 settings.musicVolume.title=Гучність музики
 settings.musicVolume.label=Гучність:
 settings.musicVolume.hint=За 0% музику вимкнено.

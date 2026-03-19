@@ -10,6 +10,23 @@
   const TWO_PI = Math.PI * 2;
   const STORAGE_SCHEMA_VERSION = '2026-02-27T00:00:00Z';
   const STORAGE_VERSION_KEY = 'breath_storage_version';
+  const FIRST_VISIT_TUTORIAL_SEEN_KEY = 'breath_first_visit_tutorial_seen';
+
+  const TUTORIAL_STEP_SHOW_MS = 9500;
+  const TUTORIAL_STEP_GAP_MS = 1800;
+  const TUTORIAL_LONG_PAUSE_MS = 30000;
+
+  const TUTORIAL_STEP_KEYS = [
+    'tutorial.step1',
+    'tutorial.step2',
+    'tutorial.step3'
+  ];
+
+  const TUTORIAL_FALLBACK_TEXT = {
+    'tutorial.step1': 'This is Breath slow. Follow the shape and breathe with its rhythm.',
+    'tutorial.step2': 'You can control the violet line with mouse or touch. Try it now.',
+    'tutorial.step3': 'Open Settings to customize the app. Keyboard navigation help is also there.'
+  };
 
   function ensureStorageSchemaVersion() {
     try {
@@ -134,6 +151,7 @@
   let quoteCyclesSlider, quoteCyclesValueEl;
   let lineWidthSlider, lineWidthValueEl;
   let speedSlider, speedValueEl;
+  let tutorialReplayButton;
   let themeToggle;
   let highContrastToggle;
   let largeTextToggle;
@@ -149,13 +167,16 @@
   const MUSIC_FADE_IN_MS = 900;
   const MUSIC_START_VOLUME = 0.06;
   const DEFAULT_MUSIC_VOLUME_PERCENT = 35;
-  const KEYBOARD_HINT_HIDE_DELAY_MS = 10000;
 
   let isHighContrastEnabled = DEFAULT_HIGH_CONTRAST;
   let isLargeTextEnabled = DEFAULT_LARGE_TEXT;
   let isNoGradientsEnabled = DEFAULT_NO_GRADIENTS;
   let isBionicFontEnabled = DEFAULT_BIONIC_FONT;
-  let keyboardHintEl;
+  let tutorialHintEl;
+  let tutorialHintTextEl;
+  let tutorialStepIndex = -1;
+  let tutorialIsActive = false;
+  let tutorialTimers = [];
   let hasKeyboardTabStarted = false;
 
   // ===== Парсеры текстов =====
@@ -440,7 +461,7 @@
 
     setHtml('i18n-language-title', 'language.title');
     setHtml('i18n-language-hint', 'language.hint');
-    setHtml('i18n-keyboard-hint', 'keyboard.hint');
+    syncTutorialHintLanguage();
 
     setHtml('i18n-settings-title', 'settings.title');
     setHtml('i18n-settings-breathingSpeed-title', 'settings.breathingSpeed.title');
@@ -465,6 +486,9 @@
     setHtml('i18n-settings-lineWidth-title', 'settings.lineWidth.title');
     setHtml('i18n-settings-lineWidth-label', 'settings.lineWidth.label');
     setHtml('i18n-settings-lineWidth-hint', 'settings.lineWidth.hint', ['br']);
+    setHtml('i18n-settings-tutorialReplay-title', 'settings.tutorialReplay.title');
+    setHtml('tutorialReplayButton', 'settings.tutorialReplay.button', ['br']);
+    setHtml('i18n-settings-tutorialReplay-hint', 'settings.tutorialReplay.hint', ['br']);
     setHtml('i18n-settings-musicVolume-title', 'settings.musicVolume.title');
     setHtml('i18n-settings-musicVolume-label', 'settings.musicVolume.label');
     setHtml('i18n-settings-musicVolume-hint', 'settings.musicVolume.hint', ['br']);
@@ -479,6 +503,7 @@
     setAriaLabel('largeTextToggle', 'settings.largeText.ariaLabel');
     setAriaLabel('noGradientsToggle', 'settings.noGradients.ariaLabel');
     setAriaLabel('bionicFontToggle', 'settings.bionicFont.ariaLabel');
+    setAriaLabel('tutorialReplayButton', 'settings.tutorialReplay.ariaLabel');
     updateMusicToggleAriaLabel();
   }
 
@@ -1069,20 +1094,121 @@
     return [langToggle, musicToggle, settingsToggle].filter(Boolean);
   }
 
-  function initKeyboardHintAutoHide() {
-    if (!keyboardHintEl) return;
+  function addTutorialTimer(callback, delayMs) {
+    const id = window.setTimeout(callback, delayMs);
+    tutorialTimers.push(id);
+  }
 
-    requestAnimationFrame(() => {
-      if (!keyboardHintEl) return;
-      keyboardHintEl.classList.add('is-visible');
-      keyboardHintEl.classList.remove('is-hidden');
+  function clearTutorialTimers() {
+    tutorialTimers.forEach((id) => {
+      window.clearTimeout(id);
     });
+    tutorialTimers = [];
+  }
+
+  function getTutorialStepText(stepIndex) {
+    const key = TUTORIAL_STEP_KEYS[stepIndex];
+    if (!key) return '';
+    return uiStrings[key] || TUTORIAL_FALLBACK_TEXT[key] || '';
+  }
+
+  function setTutorialStep(stepIndex) {
+    if (!tutorialHintTextEl) return;
+
+    tutorialStepIndex = stepIndex;
+    tutorialHintTextEl.innerHTML = sanitizeHtml(getTutorialStepText(stepIndex), ['br']);
+  }
+
+  function showTutorialHint() {
+    if (!tutorialHintEl) return;
+    tutorialHintEl.classList.add('is-visible');
+    tutorialHintEl.classList.remove('is-hidden');
+  }
+
+  function hideTutorialHint() {
+    if (!tutorialHintEl) return;
+    tutorialHintEl.classList.remove('is-visible');
+    tutorialHintEl.classList.add('is-hidden');
+  }
+
+  function syncTutorialHintLanguage() {
+    if (!tutorialIsActive) return;
+    if (tutorialStepIndex < 0) return;
+    setTutorialStep(tutorialStepIndex);
+  }
+
+  function hasSeenFirstVisitTutorial() {
+    try {
+      return localStorage.getItem(FIRST_VISIT_TUTORIAL_SEEN_KEY) === '1';
+    } catch (_) {
+      return false;
+    }
+  }
+
+  function markFirstVisitTutorialAsSeen() {
+    try {
+      localStorage.setItem(FIRST_VISIT_TUTORIAL_SEEN_KEY, '1');
+    } catch (_) {}
+  }
+
+  function startFirstVisitTutorial() {
+    if (!tutorialHintEl || !tutorialHintTextEl) return;
+    if (hasSeenFirstVisitTutorial()) {
+      hideTutorialHint();
+      return;
+    }
+
+    markFirstVisitTutorialAsSeen();
+    clearTutorialTimers();
+    tutorialIsActive = true;
+
+    setTutorialStep(0);
+    requestAnimationFrame(showTutorialHint);
+
+    const firstHideAt = TUTORIAL_STEP_SHOW_MS;
+    const secondShowAt = firstHideAt + TUTORIAL_STEP_GAP_MS;
+    const secondHideAt = secondShowAt + TUTORIAL_STEP_SHOW_MS;
+    const thirdShowAt = secondHideAt + TUTORIAL_LONG_PAUSE_MS;
+    const thirdHideAt = thirdShowAt + TUTORIAL_STEP_SHOW_MS;
+
+    addTutorialTimer(hideTutorialHint, firstHideAt);
+
+    addTutorialTimer(() => {
+      setTutorialStep(1);
+      showTutorialHint();
+    }, secondShowAt);
+
+    addTutorialTimer(hideTutorialHint, secondHideAt);
+
+    addTutorialTimer(() => {
+      setTutorialStep(2);
+      showTutorialHint();
+    }, thirdShowAt);
+
+    addTutorialTimer(() => {
+      hideTutorialHint();
+      tutorialIsActive = false;
+      tutorialStepIndex = -1;
+      clearTutorialTimers();
+    }, thirdHideAt);
+  }
+
+  function replayFirstVisitTutorialFromSettings() {
+    clearTutorialTimers();
+    tutorialIsActive = false;
+    tutorialStepIndex = -1;
+    hideTutorialHint();
+
+    try {
+      localStorage.removeItem(FIRST_VISIT_TUTORIAL_SEEN_KEY);
+    } catch (_) {}
+
+    closeSettings();
+    closeLangPanel();
 
     window.setTimeout(() => {
-      if (!keyboardHintEl) return;
-      keyboardHintEl.classList.remove('is-visible');
-      keyboardHintEl.classList.add('is-hidden');
-    }, KEYBOARD_HINT_HIDE_DELAY_MS);
+      startFirstVisitTutorial();
+    }, 280);
   }
 
   function hasMeaningfulFocus() {
@@ -1156,7 +1282,8 @@
     settingsPanel = document.getElementById('settingsPanel');
     settingsBackdrop = document.getElementById('settingsBackdrop');
     settingsClose = document.getElementById('settingsClose');
-    keyboardHintEl = document.getElementById('keyboardHint');
+    tutorialHintEl = document.getElementById('tutorialHint');
+    tutorialHintTextEl = document.getElementById('i18n-tutorial-hint');
 
     langToggle = document.getElementById('langToggle');
     musicToggle = document.getElementById('musicToggle');
@@ -1173,6 +1300,7 @@
     quoteCyclesValueEl = document.getElementById('quoteCyclesValue');
     lineWidthSlider = document.getElementById('lineWidthSlider');
     lineWidthValueEl = document.getElementById('lineWidthValue');
+    tutorialReplayButton = document.getElementById('tutorialReplayButton');
     themeToggle = document.getElementById('themeToggle');
     highContrastToggle = document.getElementById('highContrastToggle');
     largeTextToggle = document.getElementById('largeTextToggle');
@@ -1226,6 +1354,10 @@
       });
     }
 
+    if (tutorialReplayButton) {
+      tutorialReplayButton.addEventListener('click', replayFirstVisitTutorialFromSettings);
+    }
+
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         closeSettings();
@@ -1268,7 +1400,7 @@
     applyNoGradients(isNoGradientsEnabled, false);
     applyBionicFont(isBionicFontEnabled, false);
     setMusicEnabled(false);
-    initKeyboardHintAutoHide();
+    startFirstVisitTutorial();
 
     // Загрузка текстов
     applyLanguage(currentLang);

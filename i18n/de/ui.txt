@@ -4,6 +4,9 @@ settings.breathingSpeed.title=Atemgeschwindigkeit
 language.title=Sprache
 language.hint=Sprache der Oberfläche auswählen:
 keyboard.hint=Diese Website lässt sich bequem mit der Tastatur bedienen: Mit Tab zwischen Elementen wechseln, Pfeiltasten für Listen und Regler verwenden.
+tutorial.step1=Das ist Breath slow.|Folge der Form und atme im gleichen Rhythmus.
+tutorial.step2=Du kannst die violette Linie mit Maus oder Finger steuern.|Probiere es jetzt aus.
+tutorial.step3=Die Website hat nützliche Einstellungen, auch Hilfe zur Tastaturnavigation.|Öffne „Einstellungen“, wenn du bereit bist.
 
 # Labels
 settings.breathsPerMinute.label=Atemzüge pro Minute:
@@ -31,6 +34,10 @@ settings.quoteCycles.hint=Anzahl der Atemzyklen bis zum Wechsel zum nächsten Zi
 settings.lineWidth.title=Liniendicke
 settings.lineWidth.label=Linienstärke:
 settings.lineWidth.hint=Stellt die Dicke beider Atemlinien ein.
+settings.tutorialReplay.title=Kurzes Tutorial
+settings.tutorialReplay.button=Tutorial erneut anzeigen
+settings.tutorialReplay.hint=Startet die kurzen Hinweise vom ersten Besuch erneut.
+settings.tutorialReplay.ariaLabel=Tutorial erneut anzeigen
 settings.musicVolume.title=Musiklautstärke
 settings.musicVolume.label=Lautstärke:
 settings.musicVolume.hint=Bei 0% ist die Musik aus.

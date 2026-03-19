@@ -4,6 +4,9 @@ settings.breathingSpeed.title=Скорость дыхания
 language.title=Язык
 language.hint=Выберите язык интерфейса:
 keyboard.hint=Этим сайтом удобно управлять с клавиатуры: используйте Tab для перехода по элементам, а стрелки — для списков и ползунков.
+tutorial.step1=Это Breath slow.|Следите за фигурой и дышите в её ритме.
+tutorial.step2=Фиолетовой линией можно управлять мышкой или пальцем.|Попробуйте сейчас.
+tutorial.step3=На сайте есть полезные настройки, включая подсказки по навигации с клавиатуры.|Откройте «Настройки», когда будете готовы.
 
 # Labels
 settings.breathsPerMinute.label=Вдохов в минуту:
@@ -31,6 +34,10 @@ settings.quoteCycles.hint=Количество циклов дыхания до 
 settings.lineWidth.title=Толщина линий
 settings.lineWidth.label=Толщина линий:
 settings.lineWidth.hint=Настройка толщины обеих линий дыхания.
+settings.tutorialReplay.title=Короткий туториал
+settings.tutorialReplay.button=Показать обучение снова
+settings.tutorialReplay.hint=Запускает короткие подсказки первого входа.
+settings.tutorialReplay.ariaLabel=Показать обучение снова
 settings.musicVolume.title=Громкость музыки
 settings.musicVolume.label=Громкость:
 settings.musicVolume.hint=При 0% музыка выключена.

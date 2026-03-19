@@ -4,6 +4,9 @@ settings.breathingSpeed.title=Breathing speed
 language.title=Language
 language.hint=Choose interface language:
 keyboard.hint=This site is easy to use with a keyboard: use Tab to move between controls, and arrow keys for lists and sliders.
+tutorial.step1=This is Breath slow.|Follow the shape and breathe with its rhythm.
+tutorial.step2=You can control the violet line with mouse or touch.|Try it now.
+tutorial.step3=There are useful settings on this site, including keyboard navigation help.|Open Settings when you are ready.
 
 # Labels
 settings.breathsPerMinute.label=Breaths per minute:
@@ -31,6 +34,10 @@ settings.quoteCycles.hint=Number of breathing cycles before switching to the nex
 settings.lineWidth.title=Line thickness
 settings.lineWidth.label=Canvas line width:
 settings.lineWidth.hint=Adjust the thickness of both breathing lines.
+settings.tutorialReplay.title=Quick tutorial
+settings.tutorialReplay.button=Show quick tutorial again
+settings.tutorialReplay.hint=Replays short first-visit tips.
+settings.tutorialReplay.ariaLabel=Show quick tutorial again
 settings.musicVolume.title=Music volume
 settings.musicVolume.label=Volume:
 settings.musicVolume.hint=At 0% music is off.

@@ -77,9 +77,9 @@
     </svg>
   </button>
 
-  <div id="keyboardHint" class="keyboard-hint" role="status" aria-live="polite">
-    <p id="i18n-keyboard-hint">
-      Keyboard: use Tab to move between controls and arrow keys in lists/sliders.
+  <div id="tutorialHint" class="keyboard-hint is-hidden" role="status" aria-live="polite">
+    <p id="i18n-tutorial-hint">
+      This is Breath slow. Follow the shape and breathe with its rhythm.
     </p>
   </div>
 
@@ -270,6 +270,18 @@
 
           <p id="i18n-settings-lineWidth-hint" class="slider-hint">
             Adjust the thickness of both breathing lines.
+          </p>
+
+          <h3 id="i18n-settings-tutorialReplay-title">Quick tutorial</h3>
+
+          <div class="theme-row">
+            <button id="tutorialReplayButton" class="tutorial-replay-button" type="button">
+              Show quick tutorial again
+            </button>
+          </div>
+
+          <p id="i18n-settings-tutorialReplay-hint" class="slider-hint">
+            Replays short first-visit tips.
           </p>
 
         </div>

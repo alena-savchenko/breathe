@@ -191,7 +191,8 @@ body {
 .settings-close:focus-visible,
 .lang-button:focus-visible,
 .other-settings summary:focus-visible,
-.slider:focus-visible {
+.slider:focus-visible,
+.tutorial-replay-button:focus-visible {
   outline: 3px solid var(--switch-on-bg);
   outline-offset: 3px;
 }
@@ -271,10 +272,10 @@ canvas {
 
 .keyboard-hint {
   position: absolute;
-  top: 88px;
+  top: 92px;
   right: 20px;
   z-index: 19;
-  width: min(420px, calc(100vw - 40px));
+  width: min(320px, 42vw);
   background: var(--control-bg);
   color: var(--text-strong);
   border: 1px solid var(--panel-divider);
@@ -285,7 +286,8 @@ canvas {
   box-sizing: border-box;
   opacity: 0;
   transform: translateY(-6px);
-  transition: opacity 1.2s ease, transform 1.2s ease;
+  transition: opacity 1.35s ease, transform 1.35s ease;
+  pointer-events: none;
 }
 
 .keyboard-hint.is-visible {
@@ -540,6 +542,23 @@ canvas {
   font-size: 14px;
 }
 
+.tutorial-replay-button {
+  border: 1px solid var(--lang-btn-border);
+  background: var(--lang-btn-bg);
+  color: var(--text-main);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 13px;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease;
+}
+
+.tutorial-replay-button:hover {
+  background: var(--lang-btn-active-bg);
+  border-color: var(--lang-btn-active-border);
+}
+
 .theme-switch {
   position: relative;
   width: 48px;
@@ -629,6 +648,10 @@ body.large-text .lang-button {
   font-size: 16px;
 }
 
+body.large-text .tutorial-replay-button {
+  font-size: 14px;
+}
+
 body.large-text .slider-hint,
 body.large-text .lang-hint,
 body.large-text .lang-button span.code {
@@ -682,7 +705,7 @@ body.large-text .description h1 {
   .keyboard-hint {
     top: 80px;
     right: 16px;
-    width: calc(100vw - 32px);
+    width: min(250px, 44vw);
     padding: 9px 10px;
   }
 
