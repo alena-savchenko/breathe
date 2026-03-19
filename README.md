@@ -1,8 +1,9 @@
-# Breathe
+# Breath slow
 
 A minimal breathing guide that runs in your browser — made for moments of acute anxiety or a panic attack, when installing an app, signing up, or dealing with settings can feel impossible.
 
-**Live:** [https://alena-savchenko.github.io/breathe/](https://alena-savchenko.github.io/breathe/)
+**Live (primary):** [https://breathe-slow.app/](https://breathe-slow.app/)
+**Live (GitHub Pages):** [https://alena-savchenko.github.io/breathe/](https://alena-savchenko.github.io/breathe/)
 
 
 Open the link and start right away. The page shows a clear breathing rhythm with no distractions, so you can follow along without thinking.
