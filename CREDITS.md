@@ -41,6 +41,14 @@ For each asset group, detailed sources and license notes are stored next to the 
   - `icon.svg`
 - License/source: project-owned
 
+### Preview / documentation images
+- Files:
+  - `.github/assets/demo_light.png`
+  - `.github/assets/demo_dark.png`
+  - `.github/assets/demo_special_needs.png`
+  - `assets/preview/OG-preview.png`
+- License/source: project-owned
+
 ---
 
 ## Notes
