@@ -630,6 +630,28 @@ canvas {
   margin: 0 0 12px;
 }
 
+.app-footer {
+  margin: 0;
+  padding: 10px 16px 22px;
+  width: 100%;
+  box-sizing: border-box;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.45;
+  color: var(--text-muted);
+  opacity: 0.82;
+}
+
+.app-footer a {
+  color: inherit;
+  text-decoration-color: currentColor;
+}
+
+.app-footer a:hover,
+.app-footer a:focus-visible {
+  opacity: 1;
+}
+
 body.large-text .settings-header h2 {
   font-size: 20px;
 }
@@ -715,6 +737,10 @@ body.large-text .description h1 {
 
   .description {
     padding: 32px 16px 64px;
+  }
+
+  .app-footer {
+    font-size: 11px;
   }
 
   body.large-text .settings-panel {

@@ -48,4 +48,6 @@ buttons.settingsToggle.ariaLabel=Settings
 
 # About block
 description.title=About
-description.body=This breathing tool helps you regulate your state with slow, rhythmic breathing and soft visual feedback.|More features are coming soon: themes, sound, extended practices and multilingual content.
+description.body=Breath Slow is a simple breathing practice app that opens directly in your browser with no installation or sign-up.|It is made for moments when you need to slow down, steady your breath, and reduce extra stimulation.|All settings are saved only on your device, and the interface can be adjusted to your needs: rhythm, visuals, music, and accessibility options.
+footer.createdBy=Created by Alena Savchenko
+footer.viewOnGitHub=View on GitHub

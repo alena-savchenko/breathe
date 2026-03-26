@@ -495,6 +495,8 @@
 
     setHtml('i18n-description-title', 'description.title');
     setHtml('i18n-description-body', 'description.body', ['br']);
+    setHtml('i18n-footer-created-by', 'footer.createdBy');
+    setHtml('i18n-footer-view-github', 'footer.viewOnGitHub');
 
     setAriaLabel('langToggle', 'buttons.langToggle.ariaLabel');
     setAriaLabel('settingsToggle', 'buttons.settingsToggle.ariaLabel');

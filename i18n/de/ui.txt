@@ -48,4 +48,6 @@ buttons.settingsToggle.ariaLabel=Einstellungen
 
 # About block
 description.title=Über das Tool
-description.body=Dieses Atemwerkzeug hilft, den Zustand durch langsames, rhythmisches Atmen und sanfte visuelle Unterstützung zu regulieren.|Bald folgen weitere Funktionen: Themes, Sound, erweiterte Übungen und mehrsprachige Inhalte.
+description.body=Breath Slow ist eine einfache App für Atemübungen, die sich direkt im Browser ohne Installation und Registrierung öffnen lässt.|Sie ist für Momente gedacht, in denen du etwas langsamer werden, deinen Atem beruhigen und die Menge an Reizen reduzieren möchtest.|Alle Einstellungen werden nur auf deinem Gerät gespeichert, und die Oberfläche lässt sich an dich anpassen: Rhythmus, Visuals, Musik und Barrierefreiheitsoptionen.
+footer.createdBy=Erstellt von Alena Savchenko
+footer.viewOnGitHub=Auf GitHub ansehen
