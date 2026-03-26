@@ -3,7 +3,7 @@
 Breath slow is a lightweight browser breathing companion for panic, stress, and overwhelm.
 It opens instantly in the browser — no install, no account, no backend.
 
-**Live (primary):** [https://breathe-slow.app/](https://breathe-slow.app/)
+**Live (primary):** [https://breathe-slow.app/](https://breathe-slow.app/)  
 **Live (technical mirror / GitHub Pages):** [https://alena-savchenko.github.io/breathe/](https://alena-savchenko.github.io/breathe/)
 
 > Supportive self-help tool, not a medical service.

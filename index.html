@@ -3,14 +3,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; media-src 'self'; connect-src 'self'; form-action 'self'; frame-src 'none'; worker-src 'self'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' 'sha256-j3PZd+RSrgcG5TVnEuK0yQ0I3qrVEpvuKPFaSRH3eew='; style-src 'self'; img-src 'self' data:; font-src 'self'; media-src 'self'; connect-src 'self'; form-action 'self'; frame-src 'none'; worker-src 'self'">
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <meta name="theme-color" content="#ffffff">
   <link rel="stylesheet" href="./assets/css/styles.css">
-  <link rel="prefetch" href="./i18n/en/messages.txt" as="fetch" crossorigin>
-  <link rel="prefetch" href="./i18n/en/ui.txt" as="fetch" crossorigin>
+  <link rel="prefetch" href="./i18n/en/messages.txt" crossorigin>
+  <link rel="prefetch" href="./i18n/en/ui.txt" crossorigin>
 
   <link rel="icon" href="./favicon.ico" sizes="any">
   <link rel="icon" type="image/svg+xml" href="./icon.svg">
@@ -42,14 +42,7 @@
 <meta name="twitter:image:alt" content="Breath slow app preview with guided breathing circles">
 
 <script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": "Breath slow",
-  "url": "https://breathe-slow.app/",
-  "description": "Simple browser breathing app to help calm down, steady breathing, and reduce extra stimulation.",
-  "inLanguage": ["en", "ru", "uk", "de"]
-}
+{"@context":"https://schema.org","@type":"WebSite","name":"Breath slow","url":"https://breathe-slow.app/","description":"Simple browser breathing app to help calm down, steady breathing, and reduce extra stimulation.","inLanguage":["en","ru","uk","de"]}
 </script>
 
 </head>
@@ -136,7 +129,7 @@
         step="1"
         value="6"
         class="slider"
-      />
+      >
 
       <p id="i18n-settings-breathsPerMinute-hint" class="slider-hint">
         Slow breathing (4–12 breaths/min) helps the nervous system calm down.<br>
@@ -239,7 +232,7 @@
             step="1"
             value="0"
             class="slider"
-          />
+          >
 
           <p id="i18n-settings-musicVolume-hint" class="slider-hint">
             At 0% music is off.
@@ -260,7 +253,7 @@
             step="1"
             value="2"
             class="slider"
-          />
+          >
 
           <p id="i18n-settings-quoteCycles-hint" class="slider-hint">
             Number of breathing cycles before switching to the next quote.
@@ -281,7 +274,7 @@
             step="1"
             value="6"
             class="slider"
-          />
+          >
 
           <p id="i18n-settings-lineWidth-hint" class="slider-hint">
             Adjust the thickness of both breathing lines.
