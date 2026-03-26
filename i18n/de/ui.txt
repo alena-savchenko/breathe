@@ -48,6 +48,6 @@ buttons.settingsToggle.ariaLabel=Einstellungen
 
 # About block
 description.title=Über das Tool
-description.body=Breath Slow ist eine einfache App für Atemübungen, die sich direkt im Browser ohne Installation und Registrierung öffnen lässt.|Sie ist für Momente gedacht, in denen du etwas langsamer werden, deinen Atem beruhigen und die Menge an Reizen reduzieren möchtest.|Alle Einstellungen werden nur auf deinem Gerät gespeichert, und die Oberfläche lässt sich an dich anpassen: Rhythmus, Visuals, Musik und Barrierefreiheitsoptionen.
+description.body=Breath Slow ist eine einfache App für Atemübungen, die sich direkt im Browser ohne Installation und Registrierung öffnen lässt.|Sie ist für Momente gedacht, in denen du etwas langsamer werden, deinen Atem beruhigen und die Menge an Reizen reduzieren möchtest.|Alle Einstellungen werden nur auf deinem Gerät gespeichert, und die Oberfläche lässt sich an dich anpassen: Rhythmus, Visuals, Musik und Barrierefreiheitsoptionen.|Dies ist ein unterstützendes Selbsthilfe-Tool und kein medizinischer Dienst.
 footer.createdBy=Erstellt von Alena Savchenko
 footer.viewOnGitHub=Auf GitHub ansehen

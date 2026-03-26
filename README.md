@@ -3,6 +3,11 @@
 Breath slow is a lightweight browser breathing companion for panic, stress, and overwhelm.
 It opens instantly in the browser — no install, no account, no backend.
 
+**Current version:** 1.01.01
+
+Version format: `MAJOR.MINOR.PATCH` (example: `1.01.01`).
+Use `PATCH` for small fixes/text updates, `MINOR` for noticeable features/UX changes, `MAJOR` for breaking or large architecture changes.
+
 **Live (primary):** [https://breathe-slow.app/](https://breathe-slow.app/)  
 **Live (technical mirror / GitHub Pages):** [https://alena-savchenko.github.io/breathe/](https://alena-savchenko.github.io/breathe/)
 
