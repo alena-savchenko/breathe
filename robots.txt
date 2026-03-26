@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
+Sitemap: https://breathe-slow.app/sitemap.xml
 
 # Public site — nothing to hide

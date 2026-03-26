@@ -1,52 +1,53 @@
 # Breath slow
 
 Breath slow is a lightweight browser breathing companion for panic, stress, and overwhelm.
-Open and use immediately: no install, no account, no backend.
+It opens instantly in the browser — no install, no account, no backend.
 
-**Live:** [https://alena-savchenko.github.io/breathe/](https://alena-savchenko.github.io/breathe/)
+**Live (primary):** [https://breathe-slow.app/](https://breathe-slow.app/)
+**Live (technical mirror / GitHub Pages):** [https://alena-savchenko.github.io/breathe/](https://alena-savchenko.github.io/breathe/)
 
 > Supportive self-help tool, not a medical service.
 
 ## Preview
 
 <p align="center">
-	<img src=".github/assets/demo_light.png" alt="Breath slow — light theme" width="48%" />
-	<img src=".github/assets/demo_dark.png" alt="Breath slow — dark theme" width="48%" />
+  <img src=".github/assets/demo_light.png" alt="Breath slow — light theme" width="48%" />
+  <img src=".github/assets/demo_dark.png" alt="Breath slow — dark theme" width="48%" />
 </p>
 
 ## Features
 
 - Guided breathing animation with adjustable speed (BPM)
 - Interactive violet line (mouse / touch)
-- Quotes synced to breathing cycles
+- Quote rotation synced to breathing cycles
 - Optional background music with volume and BPM-linked playback
-- First-visit tutorial + replay from Settings
+- First-visit tutorial with replay from Settings
 - Languages: English, Русский, Українська, Deutsch
 - Keyboard-friendly navigation
 
 ## Settings
 
-- Breathing speed, quote cadence, line thickness
+- Breathing speed, quote cadence, and line thickness
 - Music toggle and volume
-- Theme (light/dark)
+- Theme switch (light/dark)
 - Language switcher
 - Tutorial replay
 
-Settings are stored locally in `localStorage`.
+Preferences are stored locally in `localStorage`.
 
 ## Special needs (Accessibility)
 
-For calmer visuals and easier reading, the app includes a dedicated Special needs section:
+Dedicated accessibility options for calmer visuals and easier reading:
 
 - High contrast
 - Large text
 - Disable gradients
 - Bionic font
 
-You can combine all options or enable only the ones you need.
+You can enable all options together or only the ones you need.
 
 <p align="center">
-	<img src=".github/assets/demo_special_needs.png" alt="Breath slow — special needs settings" width="78%" />
+  <img src=".github/assets/demo_special_needs.png" alt="Breath slow — special needs settings" width="78%" />
 </p>
 
 ## Run locally
@@ -68,9 +69,7 @@ Open: `http://localhost:8080`
 ├─ index.html
 ├─ assets/
 │  ├─ css/styles.css
-│  ├─ js/
-│  │  ├─ breath.js
-│  │  └─ script.js
+│  ├─ js/{breath.js, script.js}
 │  ├─ preview/OG-preview.png
 │  ├─ fonts/fast-font/*
 │  └─ audio/music/*
@@ -79,10 +78,7 @@ Open: `http://localhost:8080`
 │  ├─ ru/{messages.txt,ui.txt}
 │  ├─ uk/{messages.txt,ui.txt}
 │  └─ de/{messages.txt,ui.txt}
-└─ .github/assets/
-	├─ demo_light.png
-	├─ demo_dark.png
-	└─ demo_special_needs.png
+└─ .github/assets/{demo_light.png, demo_dark.png, demo_special_needs.png}
 ```
 
 ## Docs
