@@ -1096,6 +1096,15 @@
     return [langToggle, musicToggle, settingsToggle].filter(Boolean);
   }
 
+  function registerServiceWorker() {
+    if (!('serviceWorker' in navigator)) return;
+    if (!window.isSecureContext) return;
+
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    });
+  }
+
   function addTutorialTimer(callback, delayMs) {
     const id = window.setTimeout(callback, delayMs);
     tutorialTimers.push(id);
@@ -1277,6 +1286,8 @@
       console.error('BreathApp не найден. Убедись, что breath.js загружается раньше script.js');
       return;
     }
+
+    registerServiceWorker();
 
     textEl = document.getElementById('breathText');
 
