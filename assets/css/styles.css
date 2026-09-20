@@ -130,7 +130,7 @@ body {
   padding: 0;
   width: 100%;
   height: 100%;
-  overflow-x: hidden;
+  overflow-x: clip;
   background: var(--page-bg);
   font-family: var(--app-font-family);
   color: var(--text-strong);
@@ -209,7 +209,7 @@ body.no-gradients .breath-text {
 
 canvas {
   display: block;
-  touch-action: none;
+  touch-action: pan-y pinch-zoom;
 }
 
 /* Одинаковые кнопки (язык и настройки) */
@@ -612,7 +612,6 @@ canvas {
 
 /* Нижний блок */
 .description {
-  margin-top: 100vh;
   padding: 40px 16px 80px;
   max-width: 700px;
   box-sizing: border-box;
@@ -760,4 +759,34 @@ body.large-text .description h1 {
   body.large-text .description h1 {
     font-size: 30px;
   }
+}
+
+.breathing-scene { position: relative; }
+.circle-interaction {
+  position: absolute;
+  border-radius: 50%;
+  touch-action: none;
+  user-select: none;
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+body.reduced-motion *,
+body.reduced-motion *::before,
+body.reduced-motion *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+body.reduced-motion .breath-text {
+  background-image: none;
+  -webkit-text-fill-color: currentColor;
 }

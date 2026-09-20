@@ -50,9 +50,13 @@
 
   let currentTheme = 'light';
   let gradientsEnabled = true;
+  let reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let phaseHandler = null;
+  let lastPhase = null;
 
   const canvas = document.getElementById('breathCanvas');
   const ctx = canvas.getContext('2d');
+  const interaction = document.getElementById('circleInteraction');
 
   // ===== Скорость дыхания (внутри анимации) =====
   function breathsPerMinuteToRadPerSec(bpm) {
@@ -145,8 +149,8 @@
 
   function toCanvasCoords(event) {
     return {
-      x: event.clientX,
-      y: event.clientY
+      x: event.clientX - canvas.getBoundingClientRect().left,
+      y: event.clientY - canvas.getBoundingClientRect().top
     };
   }
 
@@ -215,16 +219,15 @@
 
   // ===== Обработка указателя (пользовательский круг) =====
   function onPointerDown(e) {
-    e.preventDefault();
+    if (e.button !== 0) return;
     const { x, y } = toCanvasCoords(e);
     activePointers.set(e.pointerId, { x, y });
     syncInteractionMode();
-    canvas.setPointerCapture(e.pointerId);
+    interaction.setPointerCapture(e.pointerId);
   }
 
   function onPointerMove(e) {
     if (!activePointers.has(e.pointerId)) return;
-    e.preventDefault();
     const { x, y } = toCanvasCoords(e);
     activePointers.set(e.pointerId, { x, y });
 
@@ -246,19 +249,20 @@
     const hadPointer = activePointers.delete(e.pointerId);
     if (!hadPointer) return;
 
-    e.preventDefault();
-    canvas.releasePointerCapture(e.pointerId);
+    if (interaction.hasPointerCapture(e.pointerId)) interaction.releasePointerCapture(e.pointerId);
     syncInteractionMode();
   }
 
-  canvas.addEventListener('pointerdown', onPointerDown);
-  canvas.addEventListener('pointermove', onPointerMove);
-  canvas.addEventListener('pointerup', onPointerUp);
-  canvas.addEventListener('pointercancel', onPointerUp);
-  canvas.addEventListener('pointerleave', (e) => {
+  interaction.addEventListener('pointerdown', onPointerDown);
+  interaction.addEventListener('pointermove', onPointerMove);
+  interaction.addEventListener('pointerup', onPointerUp);
+  interaction.addEventListener('pointercancel', onPointerUp);
+  interaction.addEventListener('pointerleave', (e) => {
     if (!isDragging) return;
     onPointerUp(e);
   });
+
+  interaction.addEventListener('lostpointercapture', onPointerUp);
 
   window.addEventListener('resize', resize);
   resize();
@@ -278,6 +282,7 @@
       shadowColor = color
     } = options || {};
 
+    if (reducedMotion) time = 0;
     ctx.save();
     ctx.lineWidth = lineWidth;
     if (gradientsEnabled && Array.isArray(gradientColors) && gradientColors.length >= 2) {
@@ -306,7 +311,7 @@
     ctx.lineJoin = 'round';
     ctx.lineCap = 'round';
 
-    if (glow) {
+    if (glow && !reducedMotion) {
       ctx.shadowBlur = 25;
       ctx.shadowColor = shadowColor;
     } else {
@@ -323,7 +328,7 @@
       const noise =
         Math.sin(angle * noiseFreq + t) +
         0.5 * Math.sin(angle * (noiseFreq * 0.7) - t * 0.8);
-      const r = radius + noise * noiseAmp;
+      const r = radius + (reducedMotion ? 0 : noise * noiseAmp);
       const x = cx + r * Math.cos(angle);
       const y = cy + r * Math.sin(angle);
       if (i === 0) ctx.moveTo(x, y);
@@ -341,6 +346,11 @@
     const tSec = (now - startTime) / 1000;
     const phaseAngle = getPhaseAngleAt(now);
     const cycleIndex = Math.floor(phaseAngle / (2 * Math.PI));
+    const phase = Math.cos(phaseAngle) >= 0 ? 'inhale' : 'exhale';
+    if (phase !== lastPhase) {
+      lastPhase = phase;
+      if (phaseHandler) phaseHandler(phase);
+    }
 
     // Сообщаем о завершении цикла (для текста и т.п.)
     if (cycleIndex !== lastCycleIndex) {
@@ -355,7 +365,7 @@
 
     const restRadius = minR * SETTINGS.userMinMultiplier;
 
-    if (isDragging) {
+    if (isDragging || isPinching) {
       targetRadius =
         targetRadius +
         (rawRadius - targetRadius) * SETTINGS.dragTargetEasing;
@@ -384,6 +394,12 @@
         userRadius + (restRadius - userRadius) * SETTINGS.dragRadiusEasing;
     }
 
+    // Only this small hit area reserves touch gestures; the rest of the scene scrolls.
+    const hitRadius = userRadius + SETTINGS.lineWidth / 2 + 12;
+    interaction.style.width = interaction.style.height = `${hitRadius * 2}px`;
+    interaction.style.left = `${cx - hitRadius}px`;
+    interaction.style.top = `${cy - hitRadius}px`;
+
     const diff = Math.abs(r1 - userRadius);
     const radiusTolerance = baseRadius * SETTINGS.syncToleranceFactor;
     const inSyncNow = diff < radiusTolerance;
@@ -395,7 +411,7 @@
     }
 
     const isSynced = syncCounter >= SETTINGS.syncFrames;
-    const visualSynced = isDragging && isSynced;
+    const visualSynced = (isDragging || isPinching) && isSynced;
 
     // Фон
     ctx.clearRect(0, 0, width, height);
@@ -510,6 +526,11 @@
   }
 
   window.BreathApp = {
+    setReducedMotion(enabled) { reducedMotion = !!enabled; },
+    onPhase(handler) {
+      phaseHandler = handler;
+      handler(Math.cos(getPhaseAngle()) >= 0 ? 'inhale' : 'exhale');
+    },
     setTheme,
     getTheme,
     getPhaseAngle,

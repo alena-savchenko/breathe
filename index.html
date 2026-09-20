@@ -22,7 +22,7 @@
 
 <meta name="description" content="Free breathing app to help you feel calm during panic, stress, or anxiety. Available in multiple languages. Follow the circles and breathe slowly.">
 
-<meta name="keywords" content="breathe online, online breathing tool, calm down now, calm panic attack, stop panic attack, help with panic attack, breathing for anxiety, anxiety attack breathing exercise, slow breathing exercise, deep breathing exercise, guided breathing, grounding exercise, calm breathing app, regulate nervous system, how to stop hyperventilating, relax quickly, breathing circle, box breathing, 4-7-8 breathing, stress relief breathing">
+<meta name="keywords" content="breathe online, online breathing tool, calm down now, calm panic attack, stop panic attack, help with panic attack, breathing for anxiety, anxiety attack breathing exercise, slow breathing exercise, deep breathing exercise, guided breathing, grounding exercise, calm breathing app, regulate nervous system, how to stop hyperventilating, relax quickly, breathing circle, stress relief breathing">
 
 <meta property="og:type" content="website">
 <meta property="og:title" content="Breath slow – Calm Down Now with Guided Breathing">
@@ -148,13 +148,13 @@
       </div>
 
       <p id="i18n-settings-theme-hint" class="slider-hint">
-        Dark theme lowers screen brightness and is more comfortable in low light.
+        Dark theme uses darker colors and may feel more comfortable in low light.
       </p>
 
       <hr>
 
       <details id="accessibilitySettings" class="other-settings">
-        <summary id="i18n-settings-accessibility-title">Special needs</summary>
+        <summary id="i18n-settings-accessibility-title">Accessibility</summary>
 
         <div class="other-settings-content">
           <h3 id="i18n-settings-highContrast-title">High contrast mode</h3>
@@ -302,7 +302,11 @@
 
   <main id="mainContent">
     <!-- Canvas -->
-    <canvas id="breathCanvas"></canvas>
+    <div class="breathing-scene">
+    <canvas id="breathCanvas" role="img" aria-label="Guided breathing circle" aria-describedby="breathingDescription"></canvas>
+    <div id="circleInteraction" class="circle-interaction" aria-hidden="true"></div>
+    <p id="breathingDescription" class="visually-hidden">Breathe with the circle. Inhale as it expands, exhale as it contracts.</p>
+    <p id="breathingPhase" class="visually-hidden" role="status" aria-live="polite" aria-atomic="true"></p>
 
     <audio id="bgMusic" preload="none" loop>
       <source src="./assets/audio/music/ambient-loop-120s-fade_64k.opus" type="audio/ogg; codecs=opus">
@@ -310,7 +314,8 @@
     </audio>
 
     <!-- Цитаты под анимацией -->
-    <div id="breathText" class="breath-text">Breathe…</div>
+    <div id="breathText" class="breath-text">Breathe with the circle. Inhale as it expands, exhale as it contracts.</div>
+    </div>
 
     <!-- Нижний блок -->
     <div class="description">

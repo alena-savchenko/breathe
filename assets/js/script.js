@@ -115,6 +115,9 @@
     return DEFAULT_THEME;
   }
 
+  let isReducedMotion = getSystemReducedMotionPreference();
+  let breathingPhase = 'inhale';
+
   let currentLang = getInitialLang();
   let currentTheme = getInitialTheme();
 
@@ -124,7 +127,7 @@
   let cyclesSinceChange = 0;
 
   const fallbackEn = [
-    'Breathe…<br>Inhale as the circle expands, exhale as it contracts.',
+    'Breathe with the circle. Inhale as it expands, exhale as it contracts.',
     'You can add feedback.<br>Press and hold the center circle.<br>Move outward as you inhale, inward as you exhale.',
     'Just breathe.'
   ];
@@ -263,7 +266,7 @@
   function setTextWithFade(newHtml) {
     if (!textEl) return;
 
-    if (isNoGradientsEnabled) {
+    if (isNoGradientsEnabled || isReducedMotion) {
       textEl.innerHTML = sanitizeHtml(newHtml, ['br']);
       textEl.style.setProperty('--fill', '100%');
       textEl.style.opacity = 1;
@@ -308,7 +311,7 @@
 
   function resetMessageFill() {
     if (!textEl) return;
-    if (isNoGradientsEnabled) {
+    if (isNoGradientsEnabled || isReducedMotion) {
       textEl.style.setProperty('--fill', '100%');
       messageStartPhase = null;
       return;
@@ -323,7 +326,7 @@
 
     if (!textEl || !messages.length) return;
 
-    if (isNoGradientsEnabled) {
+    if (isNoGradientsEnabled || isReducedMotion) {
       textEl.style.setProperty('--fill', '100%');
       return;
     }
@@ -460,6 +463,10 @@
       }
     }
 
+    setAriaLabel('breathCanvas', 'breathing.name');
+    setHtml('breathingDescription', 'breathing.description');
+    updateBreathingPhase(breathingPhase);
+
     setHtml('i18n-language-title', 'language.title');
     setHtml('i18n-language-hint', 'language.hint');
     syncTutorialHintLanguage();
@@ -508,6 +515,20 @@
     setAriaLabel('bionicFontToggle', 'settings.bionicFont.ariaLabel');
     setAriaLabel('tutorialReplayButton', 'settings.tutorialReplay.ariaLabel');
     updateMusicToggleAriaLabel();
+  }
+
+  function updateBreathingPhase(phase) {
+    breathingPhase = phase;
+    const el = document.getElementById('breathingPhase');
+    const text = uiStrings['breathing.' + phase] || (phase === 'inhale' ? 'Inhale' : 'Exhale');
+    if (el && el.textContent !== text) el.textContent = text;
+  }
+
+  function applyReducedMotion() {
+    isReducedMotion = getSystemReducedMotionPreference();
+    document.body.classList.toggle('reduced-motion', isReducedMotion);
+    window.BreathApp.setReducedMotion(isReducedMotion);
+    resetMessageFill();
   }
 
   function clamp(value, min, max) {
@@ -590,7 +611,7 @@
       window.BreathApp.setGradientsEnabled(!isNoGradientsEnabled);
     }
 
-    if (isNoGradientsEnabled) {
+    if (isNoGradientsEnabled || isReducedMotion) {
       if (textEl) {
         textEl.style.setProperty('--fill', '100%');
       }
@@ -1399,6 +1420,9 @@
 
     // Связь с анимацией: обновление текста по выбранному числу циклов
     window.BreathApp.onCycle(handleCycleAdvance);
+    window.BreathApp.onPhase(updateBreathingPhase);
+    applyReducedMotion();
+    window.matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change', applyReducedMotion);
     requestAnimationFrame(updateMessageFillLoop);
 
     // UI-часть
