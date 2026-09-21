@@ -3,17 +3,27 @@ const CACHE_NAME = 'breath-static-v1.01.03';
 const CORE_ASSETS = [
   './',
   './index.html',
-  './assets/css/styles.css?v=modes-ui-1',
-  './assets/js/breath.js?v=modes-ui-1',
-  './assets/js/script.js?v=modes-ui-1',
-  './i18n/en/messages.txt?v=modes-ui-1',
-  './i18n/en/ui.txt?v=modes-ui-1',
-  './i18n/ru/messages.txt?v=modes-ui-1',
-  './i18n/ru/ui.txt?v=modes-ui-1',
-  './i18n/uk/messages.txt?v=modes-ui-1',
-  './i18n/uk/ui.txt?v=modes-ui-1',
-  './i18n/de/messages.txt?v=modes-ui-1',
-  './i18n/de/ui.txt?v=modes-ui-1'
+  './assets/css/styles.css?v=content-pages-2',
+  './assets/css/content-pages.css?v=2',
+  './icon.svg',
+  './assets/js/breath.js?v=modes-ui-2',
+  './assets/js/script.js?v=content-pages-2',
+  './i18n/en/messages.txt?v=content-pages-2',
+  './i18n/en/ui.txt?v=content-pages-2',
+  './i18n/ru/messages.txt?v=content-pages-2',
+  './i18n/ru/ui.txt?v=content-pages-2',
+  './i18n/uk/messages.txt?v=content-pages-2',
+  './i18n/uk/ui.txt?v=content-pages-2',
+  './i18n/de/messages.txt?v=content-pages-2',
+  './i18n/de/ui.txt?v=content-pages-2',
+  './eng/about-breathing.html',
+  './eng/faq.html',
+  './ru/about-breathing.html',
+  './ru/faq.html',
+  './uk/about-breathing.html',
+  './uk/faq.html',
+  './de/about-breathing.html',
+  './de/faq.html'
 ];
 
 self.addEventListener('install', (event) => {

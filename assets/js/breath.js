@@ -101,6 +101,8 @@
 
   let breathingBpm = 6;
   let breathingMode = 'default';
+  let activePattern = null;
+  let activePatternDuration = 0;
 
   // ===== Состояние для анимации =====
   let width = 0;
@@ -177,20 +179,27 @@
     return x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x);
   }
 
-  function getPattern() {
+  function rebuildPattern() {
     if (breathingMode === 'default') {
       const halfCycle = 30 / breathingBpm;
-      return [
+      activePattern = [
         { type: 'inhale', duration: halfCycle, from: 0, to: 1 },
         { type: 'exhale', duration: halfCycle, from: 1, to: 0 }
       ];
+    } else {
+      activePattern = FIXED_PATTERNS[breathingMode] || FIXED_PATTERNS['long-exhale'];
     }
-    return FIXED_PATTERNS[breathingMode] || FIXED_PATTERNS['long-exhale'];
+    activePatternDuration = activePattern.reduce((sum, phase) => sum + phase.duration, 0);
+  }
+
+  function getPattern() {
+    if (!activePattern) rebuildPattern();
+    return activePattern;
   }
 
   function getBreathingStateAt(now) {
     const pattern = getPattern();
-    const totalDuration = pattern.reduce((sum, phase) => sum + phase.duration, 0);
+    const totalDuration = activePatternDuration;
     const elapsed = Math.max(0, (now - patternStartTime) / 1000);
     const cycleIndex = Math.floor(elapsed / totalDuration);
     const cycleElapsed = elapsed - cycleIndex * totalDuration;
@@ -353,6 +362,17 @@
     return gradientsEnabled && !highContrast && !reducedMotion;
   }
 
+  const RIBBON_STEPS = 96;
+  const RIBBON_COS = new Float32Array(RIBBON_STEPS + 1);
+  const RIBBON_SIN = new Float32Array(RIBBON_STEPS + 1);
+  const RIBBON_OUTER = new Float32Array(RIBBON_STEPS + 1);
+  const RIBBON_INNER = new Float32Array(RIBBON_STEPS + 1);
+  for (let i = 0; i <= RIBBON_STEPS; i++) {
+    const angle = i * Math.PI * 2 / RIBBON_STEPS;
+    RIBBON_COS[i] = Math.cos(angle);
+    RIBBON_SIN[i] = Math.sin(angle);
+  }
+
   function ribbonWidth(radius) {
     // Scale with the thickness control, but keep the center of small circles open.
     return Math.min(radius * 0.45, SETTINGS.lineWidth * 4.8, (Math.min(width, height) / 2 - radius - 4) / 1.1);
@@ -362,24 +382,19 @@
     const { ribbonColors, gradientShift = 0, glow = false } = options;
     const band = ribbonWidth(radius);
     const drift = time * 0.16 + gradientShift;
-    const steps = 120;
     ctx.save();
 
     // Closed filled ribbons have smooth, varying widths instead of a heavy outline.
     for (let layer = 0; layer < 4; layer++) {
       const offset = layer * Math.PI * 0.5;
       const colors = ribbonColors[layer];
-      const outer = [];
-      const inner = [];
-      for (let i = 0; i <= steps; i++) {
-        const a = i * Math.PI * 2 / steps;
+      for (let i = 0; i <= RIBBON_STEPS; i++) {
+        const a = i * Math.PI * 2 / RIBBON_STEPS;
         const wave = Math.sin(a * 3 + drift + offset);
         const center = radius + band * (0.34 * wave + 0.18 * Math.sin(a * 2 - drift + offset));
         const halfWidth = band * (0.24 + 0.3 * (0.5 + 0.5 * Math.sin(a * 2 + offset - drift)));
-        const cos = Math.cos(a);
-        const sin = Math.sin(a);
-        outer.push([cx + (center + halfWidth) * cos, cy + (center + halfWidth) * sin]);
-        inner.push([cx + (center - halfWidth) * cos, cy + (center - halfWidth) * sin]);
+        RIBBON_OUTER[i] = center + halfWidth;
+        RIBBON_INNER[i] = center - halfWidth;
       }
 
       const angle = drift * 0.6 + offset;
@@ -394,8 +409,18 @@
       ctx.globalAlpha = (layer === 0 ? 0.34 : 0.62) + (glow ? 0.1 : 0);
       ctx.fillStyle = fill;
       ctx.beginPath();
-      outer.forEach(([x, y], i) => i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y));
-      for (let i = inner.length - 1; i >= 0; i--) ctx.lineTo(inner[i][0], inner[i][1]);
+      for (let i = 0; i <= RIBBON_STEPS; i++) {
+        const x = cx + RIBBON_OUTER[i] * RIBBON_COS[i];
+        const y = cy + RIBBON_OUTER[i] * RIBBON_SIN[i];
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
+      for (let i = RIBBON_STEPS; i >= 0; i--) {
+        ctx.lineTo(
+          cx + RIBBON_INNER[i] * RIBBON_COS[i],
+          cy + RIBBON_INNER[i] * RIBBON_SIN[i]
+        );
+      }
       ctx.closePath();
       ctx.fill();
 
@@ -404,7 +429,12 @@
       ctx.strokeStyle = fill;
       ctx.lineWidth = Math.min(1.5, band * 0.08);
       ctx.beginPath();
-      outer.forEach(([x, y], i) => i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y));
+      for (let i = 0; i <= RIBBON_STEPS; i++) {
+        const x = cx + RIBBON_OUTER[i] * RIBBON_COS[i];
+        const y = cy + RIBBON_OUTER[i] * RIBBON_SIN[i];
+        if (i === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+      }
       ctx.closePath();
       ctx.stroke();
     }
@@ -661,6 +691,7 @@
     const now = performance.now();
     const previousState = getBreathingStateAt(now);
     breathingBpm = safeBpm;
+    rebuildPattern();
     if (breathingMode === 'default') {
       const newCycleDuration = 60 / breathingBpm;
       patternStartTime = now - previousState.cycleProgress * newCycleDuration * 1000;
@@ -673,6 +704,7 @@
 
   function setBreathingMode(mode) {
     breathingMode = mode === 'default' || FIXED_PATTERNS[mode] ? mode : 'default';
+    rebuildPattern();
     patternStartTime = performance.now();
     lastCycleIndex = 0;
     lastPhase = null;

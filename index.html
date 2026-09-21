@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<!-- BreathSlow by Alena Savchenko | APP_VERSION: 1.01.02 -->
-<html lang="en">
+<!-- BreathSlow by Alena Savchenko | APP_VERSION: 1.01.03 -->
+<html lang="en" class="i18n-pending">
 <head>
   <meta charset="UTF-8">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' https://breathe-slow.app 'sha256-j3PZd+RSrgcG5TVnEuK0yQ0I3qrVEpvuKPFaSRH3eew='; style-src 'self' https://breathe-slow.app; img-src 'self' data:; font-src 'self'; media-src 'self'; connect-src 'self'; form-action 'self'; frame-src 'none'; worker-src 'self'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; script-src 'self' https://breathe-slow.app 'sha256-j3PZd+RSrgcG5TVnEuK0yQ0I3qrVEpvuKPFaSRH3eew='; style-src 'self' https://breathe-slow.app 'sha256-QsekSOyZYPN6DRfVvekTt1rVNWO+JuKD6HgRohD9l/4='; img-src 'self' data:; font-src 'self'; media-src 'self'; connect-src 'self'; form-action 'self'; frame-src 'none'; worker-src 'self'">
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <meta name="theme-color" content="#ffffff">
-  <link rel="stylesheet" href="./assets/css/styles.css?v=modes-ui-1">
+  <link rel="stylesheet" href="./assets/css/styles.css?v=content-pages-2">
   <link rel="prefetch" href="./i18n/en/messages.txt" crossorigin>
   <link rel="prefetch" href="./i18n/en/ui.txt" crossorigin>
 
@@ -48,6 +48,24 @@
 </head>
 
 <body>
+
+  <noscript>
+    <style>.app-load-fallback { display: none !important; }</style>
+    <section class="startup-message startup-message-noscript" aria-labelledby="noscript-title">
+      <div class="startup-message-card">
+        <h1 id="noscript-title">JavaScript is required</h1>
+        <p>Breath Slow needs JavaScript to run the breathing animation and controls. Please enable JavaScript and reload the page.</p>
+      </div>
+    </section>
+  </noscript>
+
+  <section id="appLoadFallback" class="startup-message app-load-fallback" role="status" aria-live="polite" aria-labelledby="app-load-title">
+    <div class="startup-message-card">
+      <h1 id="app-load-title">Breath Slow could not start</h1>
+      <p>Please refresh the page and try again.</p>
+      <a href="./">Refresh page</a>
+    </div>
+  </section>
 
   <!-- Кнопка выбора языка -->
   <button id="langToggle" class="lang-toggle" aria-label="Choose language" type="button">
@@ -378,6 +396,11 @@
 
         </div>
       </details>
+
+      <nav class="resource-links resource-links-settings" aria-label="Learn more">
+        <a id="i18n-resources-settings-breathing" href="./eng/about-breathing.html">About breathing</a>
+        <a id="i18n-resources-settings-faq" href="./eng/faq.html">FAQ</a>
+      </nav>
     </div>
   </aside>
 
@@ -410,17 +433,20 @@
         All settings are saved only on your device, and the interface can be adjusted to your needs: rhythm, visuals, music, and accessibility options.
         This is a supportive self-help tool, not a medical service.
       </p>
+      <nav class="resource-links resource-links-about" aria-label="Learn more">
+        <a id="i18n-resources-about-breathing" href="./eng/about-breathing.html">About breathing</a>
+        <a id="i18n-resources-about-faq" href="./eng/faq.html">FAQ</a>
+      </nav>
     </div>
   </main>
 
   <footer class="app-footer">
-    <span id="i18n-footer-created-by">Created by Alena Savchenko</span> ·
     <a id="i18n-footer-view-github" href="https://github.com/alena-savchenko/breathe" target="_blank" rel="noopener noreferrer">View on GitHub</a>
   </footer>
 
   <!-- JS: сначала анимация, потом UI / i18n -->
-  <script defer src="./assets/js/breath.js?v=modes-ui-1"></script>
-  <script defer src="./assets/js/script.js?v=modes-ui-1"></script>
+  <script defer src="./assets/js/breath.js?v=modes-ui-2"></script>
+  <script defer src="./assets/js/script.js?v=content-pages-2"></script>
 
 </body>
 </html>

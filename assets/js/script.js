@@ -8,8 +8,8 @@
   const DEFAULT_NO_GRADIENTS = false;
   const DEFAULT_BIONIC_FONT = false;
   const TWO_PI = Math.PI * 2;
-  const APP_VERSION = '1.01.02';
-  const I18N_ASSET_VERSION = 'modes-ui-1';
+  const APP_VERSION = '1.01.03';
+  const I18N_ASSET_VERSION = 'content-pages-2';
   const STORAGE_SCHEMA_VERSION = '2026-02-27T00:00:00Z';
   const STORAGE_VERSION_KEY = 'breath_storage_version';
   const FIRST_VISIT_TUTORIAL_SEEN_KEY = 'breath_first_visit_tutorial_seen';
@@ -527,6 +527,19 @@
 
     setHtml('i18n-description-title', 'description.title');
     setHtml('i18n-description-body', 'description.body', ['br']);
+    setHtml('i18n-resources-settings-breathing', 'resources.aboutBreathing');
+    setHtml('i18n-resources-settings-faq', 'resources.faq');
+    setHtml('i18n-resources-about-breathing', 'resources.aboutBreathing');
+    setHtml('i18n-resources-about-faq', 'resources.faq');
+    const resourceFolder = { en: 'eng', ru: 'ru', uk: 'uk', de: 'de' }[currentLang] || 'eng';
+    ['i18n-resources-settings-breathing', 'i18n-resources-about-breathing'].forEach((id) => {
+      const link = document.getElementById(id);
+      if (link) link.href = `./${resourceFolder}/about-breathing.html`;
+    });
+    ['i18n-resources-settings-faq', 'i18n-resources-about-faq'].forEach((id) => {
+      const link = document.getElementById(id);
+      if (link) link.href = `./${resourceFolder}/faq.html`;
+    });
     setHtml('i18n-footer-created-by', 'footer.createdBy');
     setHtml('i18n-footer-view-github', 'footer.viewOnGitHub');
 
@@ -1430,7 +1443,7 @@
   }
 
   // ===== Инициализация после загрузки DOM =====
-  window.addEventListener('DOMContentLoaded', () => {
+  window.addEventListener('DOMContentLoaded', async () => {
     if (!window.BreathApp) {
       console.error('BreathApp не найден. Убедись, что breath.js загружается раньше script.js');
       return;
@@ -1568,7 +1581,10 @@
     setMusicEnabled(false);
     startFirstVisitTutorial();
 
-    // Загрузка текстов
-    applyLanguage(currentLang);
+    // Hide the static error state only after the complete app initialization succeeds.
+    await applyLanguage(currentLang);
+    const appLoadFallback = document.getElementById('appLoadFallback');
+    if (appLoadFallback) appLoadFallback.hidden = true;
+    document.documentElement.classList.remove('i18n-pending');
   });
 })();
