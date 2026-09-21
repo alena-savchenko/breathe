@@ -74,14 +74,33 @@
   const ctx = canvas.getContext('2d');
   const interaction = document.getElementById('circleInteraction');
 
-  // ===== Скорость дыхания (внутри анимации) =====
-  function breathsPerMinuteToRadPerSec(bpm) {
-    return (bpm / 60) * (2 * Math.PI);
-  }
+  // Each mode is described by the same phase model. Sizes are normalized
+  // between the animation's minimum and maximum breathing radius.
+  const FIXED_PATTERNS = {
+    'long-exhale': [
+      { type: 'inhale', duration: 4, from: 0, to: 1 },
+      { type: 'longExhale', duration: 6, from: 1, to: 0 }
+    ],
+    box: [
+      { type: 'inhale', duration: 4, from: 0, to: 1 },
+      { type: 'pause', duration: 4, from: 1, to: 1 },
+      { type: 'exhale', duration: 4, from: 1, to: 0 },
+      { type: 'pause', duration: 4, from: 0, to: 0 }
+    ],
+    'physiological-sigh': [
+      { type: 'inhale', duration: 2.5, from: 0, to: 0.9 },
+      { type: 'topUp', duration: 1, from: 0.9, to: 1 },
+      { type: 'longExhale', duration: 6.5, from: 1, to: 0 }
+    ],
+    'less-air': [
+      { type: 'smallInhale', duration: 3, from: 0, to: 0.45 },
+      { type: 'softExhale', duration: 5, from: 0.45, to: 0 },
+      { type: 'pause', duration: 2, from: 0, to: 0 }
+    ]
+  };
 
   let breathingBpm = 6;
-  let breathingSpeedRad = breathsPerMinuteToRadPerSec(breathingBpm);
-  let phaseBaseAngle = 0;
+  let breathingMode = 'default';
 
   // ===== Состояние для анимации =====
   let width = 0;
@@ -111,7 +130,7 @@
   let lastCycleIndex = 0;
 
   const startTime = performance.now();
-  let phaseBaseTime = startTime;
+  let patternStartTime = startTime;
 
   // Колбэк для уведомления о завершении цикла дыхания
   let cycleHandler = null;
@@ -158,9 +177,56 @@
     return x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x);
   }
 
+  function getPattern() {
+    if (breathingMode === 'default') {
+      const halfCycle = 30 / breathingBpm;
+      return [
+        { type: 'inhale', duration: halfCycle, from: 0, to: 1 },
+        { type: 'exhale', duration: halfCycle, from: 1, to: 0 }
+      ];
+    }
+    return FIXED_PATTERNS[breathingMode] || FIXED_PATTERNS['long-exhale'];
+  }
+
+  function getBreathingStateAt(now) {
+    const pattern = getPattern();
+    const totalDuration = pattern.reduce((sum, phase) => sum + phase.duration, 0);
+    const elapsed = Math.max(0, (now - patternStartTime) / 1000);
+    const cycleIndex = Math.floor(elapsed / totalDuration);
+    const cycleElapsed = elapsed - cycleIndex * totalDuration;
+    let phaseStart = 0;
+    let phase = pattern[pattern.length - 1];
+
+    for (const candidate of pattern) {
+      if (cycleElapsed < phaseStart + candidate.duration) {
+        phase = candidate;
+        break;
+      }
+      phaseStart += candidate.duration;
+    }
+
+    const rawProgress = clamp((cycleElapsed - phaseStart) / phase.duration, 0, 1);
+    const progress = phase.from === phase.to ? rawProgress : smoothStep(rawProgress);
+    const level = phase.from + (phase.to - phase.from) * progress;
+    const cycleProgress = cycleElapsed / totalDuration;
+
+    return {
+      phase: phase.type,
+      level,
+      cycleIndex,
+      cycleProgress,
+      cycleAngle: (cycleIndex + cycleProgress) * Math.PI * 2,
+      totalDuration
+    };
+  }
+
   function getPhaseAngleAt(now) {
-    const tSec = (now - phaseBaseTime) / 1000;
-    return phaseBaseAngle + breathingSpeedRad * tSec;
+    return getBreathingStateAt(now).cycleAngle;
+  }
+
+  function getReleaseDuration() {
+    const exhale = getPattern().find((phase) => phase.to < phase.from);
+    return exhale ? exhale.duration : 3;
   }
 
   function toCanvasCoords(event) {
@@ -424,11 +490,13 @@
   // ===== Главный цикл отрисовки =====
   function loop(now) {
     requestAnimationFrame(loop);
+    now = performance.now();
 
     const tSec = (now - startTime) / 1000;
-    const phaseAngle = getPhaseAngleAt(now);
-    const cycleIndex = Math.floor(phaseAngle / (2 * Math.PI));
-    const phase = Math.cos(phaseAngle) >= 0 ? 'inhale' : 'exhale';
+    const breathingState = getBreathingStateAt(now);
+    const phaseAngle = breathingState.cycleAngle;
+    const cycleIndex = breathingState.cycleIndex;
+    const phase = breathingState.phase;
     if (phase !== lastPhase) {
       lastPhase = phase;
       if (phaseHandler) phaseHandler(phase);
@@ -442,7 +510,7 @@
       }
     }
 
-    let r1 = baseRadius + amplitude * Math.sin(phaseAngle);
+    let r1 = baseRadius - amplitude + breathingState.level * amplitude * 2;
     r1 = clamp(r1, minR, maxR);
 
     const restRadius = minR * SETTINGS.userMinMultiplier;
@@ -458,7 +526,7 @@
 
       isReleasing = false;
     } else if (isReleasing) {
-      const releaseDurationSec = Math.PI / breathingSpeedRad;
+      const releaseDurationSec = getReleaseDuration();
       const elapsedSec = (now - releaseStartTime) / 1000;
       const progress = smoothStep(
         clamp(elapsedSec / releaseDurationSec, 0, 1)
@@ -591,14 +659,36 @@
   function setBreathingSpeedBpm(bpm) {
     const safeBpm = Math.max(1, Number(bpm) || 1);
     const now = performance.now();
-    phaseBaseAngle = getPhaseAngleAt(now);
-    phaseBaseTime = now;
+    const previousState = getBreathingStateAt(now);
     breathingBpm = safeBpm;
-    breathingSpeedRad = breathsPerMinuteToRadPerSec(safeBpm);
+    if (breathingMode === 'default') {
+      const newCycleDuration = 60 / breathingBpm;
+      patternStartTime = now - previousState.cycleProgress * newCycleDuration * 1000;
+    }
   }
 
   function getBreathingSpeedBpm() {
     return breathingBpm;
+  }
+
+  function setBreathingMode(mode) {
+    breathingMode = mode === 'default' || FIXED_PATTERNS[mode] ? mode : 'default';
+    patternStartTime = performance.now();
+    lastCycleIndex = 0;
+    lastPhase = null;
+  }
+
+  function getBreathingMode() {
+    return breathingMode;
+  }
+
+  function getBreathingState() {
+    const state = getBreathingStateAt(performance.now());
+    return {
+      phase: state.phase,
+      level: state.level,
+      cycleProgress: state.cycleProgress
+    };
   }
 
   function onCycle(handler) {
@@ -614,7 +704,7 @@
     setReducedMotion(enabled) { reducedMotion = !!enabled; },
     onPhase(handler) {
       phaseHandler = handler;
-      handler(Math.cos(getPhaseAngle()) >= 0 ? 'inhale' : 'exhale');
+      handler(getBreathingStateAt(performance.now()).phase);
     },
     setTheme,
     getTheme,
@@ -625,6 +715,9 @@
     getGradientsEnabled,
     setBreathingSpeedBpm,
     getBreathingSpeedBpm,
+    setBreathingMode,
+    getBreathingMode,
+    getBreathingState,
     onCycle
   };
 

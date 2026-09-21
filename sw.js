@@ -1,19 +1,19 @@
-const CACHE_NAME = 'breath-static-v1.01.02';
+const CACHE_NAME = 'breath-static-v1.01.03';
 
 const CORE_ASSETS = [
   './',
   './index.html',
-  './assets/css/styles.css',
-  './assets/js/breath.js',
-  './assets/js/script.js',
-  './i18n/en/messages.txt',
-  './i18n/en/ui.txt',
-  './i18n/ru/messages.txt',
-  './i18n/ru/ui.txt',
-  './i18n/uk/messages.txt',
-  './i18n/uk/ui.txt',
-  './i18n/de/messages.txt',
-  './i18n/de/ui.txt'
+  './assets/css/styles.css?v=modes-ui-1',
+  './assets/js/breath.js?v=modes-ui-1',
+  './assets/js/script.js?v=modes-ui-1',
+  './i18n/en/messages.txt?v=modes-ui-1',
+  './i18n/en/ui.txt?v=modes-ui-1',
+  './i18n/ru/messages.txt?v=modes-ui-1',
+  './i18n/ru/ui.txt?v=modes-ui-1',
+  './i18n/uk/messages.txt?v=modes-ui-1',
+  './i18n/uk/ui.txt?v=modes-ui-1',
+  './i18n/de/messages.txt?v=modes-ui-1',
+  './i18n/de/ui.txt?v=modes-ui-1'
 ];
 
 self.addEventListener('install', (event) => {

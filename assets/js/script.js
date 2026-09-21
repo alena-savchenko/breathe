@@ -9,6 +9,7 @@
   const DEFAULT_BIONIC_FONT = false;
   const TWO_PI = Math.PI * 2;
   const APP_VERSION = '1.01.02';
+  const I18N_ASSET_VERSION = 'modes-ui-1';
   const STORAGE_SCHEMA_VERSION = '2026-02-27T00:00:00Z';
   const STORAGE_VERSION_KEY = 'breath_storage_version';
   const FIRST_VISIT_TUTORIAL_SEEN_KEY = 'breath_first_visit_tutorial_seen';
@@ -159,6 +160,8 @@
   let quoteCyclesSlider, quoteCyclesValueEl;
   let lineWidthSlider, lineWidthValueEl;
   let speedSlider, speedValueEl;
+  let breathingModeInputs, breathingModeDetails;
+  let fixedSpeedHint, adjustableSpeedHint;
   let tutorialReplayButton;
   let themeToggle;
   let highContrastToggle;
@@ -356,7 +359,7 @@
     const token = ++messagesLoadToken;
 
     async function tryLoad(langCode) {
-      const url = `./i18n/${langCode}/messages.txt`;
+      const url = `./i18n/${langCode}/messages.txt?v=${I18N_ASSET_VERSION}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error('HTTP ' + res.status);
       const text = await res.text();
@@ -408,7 +411,7 @@
     const token = ++uiLoadToken;
 
     async function tryLoad(langCode) {
-      const url = `./i18n/${langCode}/ui.txt`;
+      const url = `./i18n/${langCode}/ui.txt?v=${I18N_ASSET_VERSION}`;
       const res = await fetch(url);
       if (!res.ok) throw new Error('HTTP ' + res.status);
       const text = await res.text();
@@ -477,6 +480,23 @@
 
     setHtml('i18n-settings-title', 'settings.title');
     setHtml('i18n-settings-breathingSpeed-title', 'settings.breathingSpeed.title');
+    setHtml('i18n-settings-breathingMode-title', 'settings.breathingMode.title');
+    setHtml('i18n-settings-breathingMode-additional', 'settings.breathingMode.additional');
+    setHtml('i18n-settings-breathingSpeed-fixedHint', 'settings.breathingMode.fixedSpeedHint');
+
+    const modeTranslationIds = {
+      default: 'default',
+      longExhale: 'longExhale',
+      box: 'box',
+      sigh: 'sigh',
+      lessAir: 'lessAir'
+    };
+    Object.entries(modeTranslationIds).forEach(([idSuffix, keySuffix]) => {
+      setHtml(`i18n-breathingMode-${idSuffix}-title`, `settings.breathingMode.${keySuffix}.title`);
+      setHtml(`i18n-breathingMode-${idSuffix}-short`, `settings.breathingMode.${keySuffix}.short`);
+      setHtml(`i18n-breathingMode-${idSuffix}-more`, 'settings.breathingMode.more');
+      setHtml(`i18n-breathingMode-${idSuffix}-long`, `settings.breathingMode.${keySuffix}.long`);
+    });
 
     setHtml('i18n-settings-breathsPerMinute-label', 'settings.breathsPerMinute.label');
     setHtml('i18n-settings-breathsPerMinute-hint', 'settings.breathsPerMinute.hint', ['br']);
@@ -528,6 +548,75 @@
     const el = document.getElementById('breathingPhase');
     const text = uiStrings['breathing.' + phase] || (phase === 'inhale' ? 'Inhale' : 'Exhale');
     if (el && el.textContent !== text) el.textContent = text;
+  }
+
+  function getStoredBreathingMode() {
+    try {
+      const stored = localStorage.getItem(BREATHING_MODE_KEY);
+      if (BREATHING_MODE_IDS.includes(stored)) return stored;
+    } catch (_) {}
+    return 'default';
+  }
+
+  function applyBreathingMode(mode, persist) {
+    const safeMode = BREATHING_MODE_IDS.includes(mode) ? mode : 'default';
+    const isFixed = safeMode !== 'default';
+
+    if (breathingModeInputs) {
+      breathingModeInputs.forEach((input) => {
+        input.checked = input.value === safeMode;
+      });
+    }
+    if (speedSlider) {
+      speedSlider.disabled = isFixed;
+      speedSlider.setAttribute(
+        'aria-describedby',
+        isFixed ? 'i18n-settings-breathingSpeed-fixedHint' : 'i18n-settings-breathsPerMinute-hint'
+      );
+    }
+    if (adjustableSpeedHint) adjustableSpeedHint.hidden = isFixed;
+    if (fixedSpeedHint) fixedSpeedHint.hidden = !isFixed;
+
+    window.BreathApp.setBreathingMode(safeMode);
+    updateMusicPlaybackRate();
+
+    if (persist !== false) {
+      try {
+        localStorage.setItem(BREATHING_MODE_KEY, safeMode);
+      } catch (_) {}
+    }
+  }
+
+  function initBreathingModes() {
+    breathingModeInputs = Array.from(document.querySelectorAll('input[name="breathingMode"]'));
+    breathingModeDetails = Array.from(document.querySelectorAll('.breathing-mode-option details'));
+    const breathingModeCards = Array.from(document.querySelectorAll('.breathing-mode-option'));
+    adjustableSpeedHint = document.getElementById('i18n-settings-breathsPerMinute-hint');
+    fixedSpeedHint = document.getElementById('i18n-settings-breathingSpeed-fixedHint');
+
+    breathingModeInputs.forEach((input) => {
+      input.addEventListener('change', () => {
+        if (input.checked) applyBreathingMode(input.value, true);
+      });
+    });
+    breathingModeCards.forEach((card) => {
+      card.addEventListener('click', (event) => {
+        if (event.target.closest('label, summary')) return;
+        const input = card.querySelector('input[name="breathingMode"]');
+        if (!input || input.checked || input.disabled) return;
+        input.checked = true;
+        input.dispatchEvent(new Event('change', { bubbles: true }));
+      });
+    });
+    breathingModeDetails.forEach((details) => {
+      details.addEventListener('toggle', () => {
+        if (!details.open) return;
+        breathingModeDetails.forEach((other) => {
+          if (other !== details) other.open = false;
+        });
+      });
+    });
+    applyBreathingMode(getStoredBreathingMode(), false);
   }
 
   function applyReducedMotion() {
@@ -749,6 +838,15 @@
 
   function updateMusicPlaybackRate() {
     if (!bgMusic || !speedSlider) return;
+
+    if (
+      window.BreathApp &&
+      typeof window.BreathApp.getBreathingMode === 'function' &&
+      window.BreathApp.getBreathingMode() !== 'default'
+    ) {
+      bgMusic.playbackRate = 1;
+      return;
+    }
 
     const bpm = parseInt(speedSlider.value || '6', 10);
     const safeBpm = Number.isFinite(bpm) ? bpm : 6;
@@ -1457,6 +1555,7 @@
     // UI-часть
     renderLangList();
     initBreathingSpeedFromSlider();
+    initBreathingModes();
     initQuoteCyclesSlider();
     initLineWidthSlider();
     initMusicVolumeSlider();

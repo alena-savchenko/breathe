@@ -28,6 +28,13 @@
   --lang-btn-active-bg: #e6ecff;
   --lang-btn-active-border: #4a7bff;
 
+  --mode-card-bg: #ffffff;
+  --mode-card-hover-bg: #f8faff;
+  --mode-card-selected-bg: #eef2ff;
+  --mode-card-shadow: 0 5px 16px rgba(53, 68, 105, 0.07);
+  --mode-card-selected-shadow: 0 7px 20px rgba(74, 123, 255, 0.14);
+  --mode-details-bg: #f0f3fa;
+
   --slider-track: #ddd;
   --slider-thumb: #666;
   --hr-color: #e0e0e0;
@@ -64,6 +71,13 @@ body.theme-dark {
   --lang-btn-active-bg: rgba(74, 123, 255, 0.2);
   --lang-btn-active-border: #82a3ff;
 
+  --mode-card-bg: #1f2838;
+  --mode-card-hover-bg: #263147;
+  --mode-card-selected-bg: #26375b;
+  --mode-card-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+  --mode-card-selected-shadow: 0 7px 22px rgba(74, 123, 255, 0.2);
+  --mode-details-bg: #2b3548;
+
   --slider-track: #394862;
   --slider-thumb: #bfc9de;
   --hr-color: #2a3548;
@@ -89,6 +103,12 @@ body.high-contrast {
   --lang-btn-border: rgba(0, 0, 0, 0.45);
   --lang-btn-active-bg: #e6edff;
   --lang-btn-active-border: #1a43c4;
+  --mode-card-bg: #ffffff;
+  --mode-card-hover-bg: #ffffff;
+  --mode-card-selected-bg: #e6edff;
+  --mode-card-shadow: none;
+  --mode-card-selected-shadow: none;
+  --mode-details-bg: #ffffff;
   --slider-track: #9f9f9f;
   --slider-thumb: #111111;
   --hr-color: rgba(0, 0, 0, 0.28);
@@ -113,6 +133,12 @@ body.theme-dark.high-contrast {
   --lang-btn-border: rgba(255, 255, 255, 0.5);
   --lang-btn-active-bg: #1a2f6f;
   --lang-btn-active-border: #8fb2ff;
+  --mode-card-bg: #0a0d13;
+  --mode-card-hover-bg: #0a0d13;
+  --mode-card-selected-bg: #1a2f6f;
+  --mode-card-shadow: none;
+  --mode-card-selected-shadow: none;
+  --mode-details-bg: #0a0d13;
   --slider-track: #7d8596;
   --slider-thumb: #ffffff;
   --hr-color: rgba(255, 255, 255, 0.35);
@@ -341,7 +367,7 @@ canvas {
   top: 0;
   right: 0;
   height: 100%;
-  width: min(320px, 80vw);
+  width: min(380px, 92vw);
   background: var(--panel-bg);
   box-shadow: var(--panel-shadow);
   transform: translateX(100%);
@@ -438,6 +464,163 @@ canvas {
   font-size: 16px;
 }
 
+.breathing-modes {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+}
+
+.breathing-modes legend {
+  padding: 0;
+  margin: 0 0 12px;
+  color: var(--text-strong);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.breathing-mode-option {
+  border: 1px solid var(--lang-btn-border);
+  border-radius: 16px;
+  background: var(--mode-card-bg);
+  box-shadow: var(--mode-card-shadow);
+  margin-bottom: 12px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.breathing-mode-option:has(input:checked) {
+  border-color: var(--lang-btn-active-border);
+  background: var(--mode-card-selected-bg);
+  box-shadow: var(--mode-card-selected-shadow);
+}
+
+.breathing-mode-option:has(input:focus-visible) {
+  outline: 3px solid var(--switch-on-bg);
+  outline-offset: 2px;
+}
+
+@media (hover: hover) {
+  .breathing-mode-option:hover {
+    border-color: var(--lang-btn-active-border);
+    background: var(--mode-card-hover-bg);
+    transform: translateY(-1px);
+  }
+
+  .breathing-mode-option:has(input:checked):hover {
+    background: var(--mode-card-selected-bg);
+  }
+}
+
+.breathing-mode-option label {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 15px 15px 12px;
+  cursor: pointer;
+}
+
+.breathing-mode-option input {
+  appearance: none;
+  display: grid;
+  place-content: center;
+  flex: 0 0 auto;
+  width: 21px;
+  height: 21px;
+  margin: 1px 0 0;
+  border: 2px solid var(--slider-thumb);
+  border-radius: 50%;
+  background: var(--mode-card-bg);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.breathing-mode-option input::before {
+  content: '';
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: var(--switch-on-bg);
+  transform: scale(0);
+  transition: transform 0.16s ease;
+}
+
+.breathing-mode-option input:checked {
+  border-color: var(--switch-on-bg);
+  background: var(--switch-thumb);
+}
+
+.breathing-mode-option input:checked::before {
+  transform: scale(1);
+}
+
+.breathing-mode-option label span {
+  min-width: 0;
+}
+
+.breathing-mode-option strong,
+.breathing-mode-option small {
+  display: block;
+}
+
+.breathing-mode-option strong {
+  color: var(--text-strong);
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+.breathing-mode-option small,
+.breathing-mode-option details p {
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.breathing-mode-option small {
+  margin-top: 3px;
+}
+
+.breathing-mode-option details {
+  margin: 0 15px 14px 48px;
+}
+
+.breathing-mode-option details summary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 30px;
+  box-sizing: border-box;
+  list-style: none;
+  cursor: pointer;
+  color: var(--text-main);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: var(--mode-details-bg);
+}
+
+.breathing-mode-option details summary::-webkit-details-marker {
+  display: none;
+}
+
+.breathing-mode-option details summary::after {
+  content: '›';
+  font-size: 16px;
+  line-height: 1;
+  transform: rotate(90deg);
+  transition: transform 0.2s ease;
+}
+
+.breathing-mode-option details[open] summary::after {
+  transform: rotate(-90deg);
+}
+
+.breathing-mode-option details p {
+  margin: 10px 2px 2px;
+}
+
 /* Ползунок */
 .slider-label {
   margin-bottom: 6px;
@@ -477,6 +660,16 @@ canvas {
   cursor: pointer;
 }
 
+.slider:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.slider:disabled::-webkit-slider-thumb,
+.slider:disabled::-moz-range-thumb {
+  cursor: not-allowed;
+}
+
 .slider-hint {
   font-size: 12px;
   color: var(--text-muted);
@@ -499,7 +692,7 @@ canvas {
   margin-bottom: 10px;
 }
 
-.other-settings summary {
+.other-settings > summary {
   list-style: none;
   cursor: pointer;
   font-size: 15px;
@@ -508,18 +701,18 @@ canvas {
   padding: 12px 0;
 }
 
-.other-settings summary::-webkit-details-marker {
+.other-settings > summary::-webkit-details-marker {
   display: none;
 }
 
-.other-settings summary::after {
+.other-settings > summary::after {
   content: '▾';
   float: right;
   opacity: 0.8;
   transition: transform 0.2s ease;
 }
 
-.other-settings[open] summary::after {
+.other-settings[open] > summary::after {
   transform: rotate(180deg);
 }
 

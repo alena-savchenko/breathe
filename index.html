@@ -8,7 +8,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <meta name="theme-color" content="#ffffff">
-  <link rel="stylesheet" href="./assets/css/styles.css">
+  <link rel="stylesheet" href="./assets/css/styles.css?v=modes-ui-1">
   <link rel="prefetch" href="./i18n/en/messages.txt" crossorigin>
   <link rel="prefetch" href="./i18n/en/ui.txt" crossorigin>
 
@@ -112,6 +112,87 @@
       <button id="settingsClose" class="settings-close" type="button" aria-label="Close settings">✕</button>
     </header>
     <div class="settings-content">
+      <details id="breathingModesSettings" class="other-settings breathing-modes-panel">
+        <summary id="i18n-settings-breathingMode-additional">Additional modes</summary>
+        <div class="other-settings-content">
+          <fieldset class="breathing-modes">
+            <legend id="i18n-settings-breathingMode-title" class="visually-hidden">Breathing mode</legend>
+
+        <div class="breathing-mode-option">
+          <label>
+            <input type="radio" name="breathingMode" value="default" checked>
+            <span>
+              <strong id="i18n-breathingMode-default-title">Regular breathing</strong>
+              <small id="i18n-breathingMode-default-short">A flexible mode: choose a comfortable pace and follow the circle.</small>
+            </span>
+          </label>
+          <details>
+            <summary id="i18n-breathingMode-default-more">Learn more</summary>
+            <p id="i18n-breathingMode-default-long">Slow, steady breathing can reduce overall arousal and coordinate the breath with natural heart-rate variation. Choose the pace that suits you.</p>
+          </details>
+        </div>
+
+        <div class="breathing-mode-option">
+          <label>
+            <input type="radio" name="breathingMode" value="long-exhale">
+            <span>
+              <strong id="i18n-breathingMode-longExhale-title">Long exhale</strong>
+              <small id="i18n-breathingMode-longExhale-short">For winding down and relaxing, especially after overload or before sleep.</small>
+            </span>
+          </label>
+          <details>
+            <summary id="i18n-breathingMode-longExhale-more">Learn more</summary>
+            <p id="i18n-breathingMode-longExhale-long">Heart rate usually slows during exhalation, so a longer exhale shifts the cycle toward relaxation. There are no holds: just a calm inhale and a longer exhale.</p>
+          </details>
+        </div>
+
+        <div class="breathing-mode-option">
+          <label>
+            <input type="radio" name="breathingMode" value="box">
+            <span>
+              <strong id="i18n-breathingMode-box-title">Box breathing</strong>
+              <small id="i18n-breathingMode-box-short">For stressful moments when you need to stay composed before a conversation, presentation, or difficult task.</small>
+            </span>
+          </label>
+          <details>
+            <summary id="i18n-breathingMode-box-more">Learn more</summary>
+            <p id="i18n-breathingMode-box-long">Four equal phases create a simple, predictable rhythm that asks for a little attention. It can help you settle while staying alert.</p>
+          </details>
+        </div>
+
+        <div class="breathing-mode-option">
+          <label>
+            <input type="radio" name="breathingMode" value="physiological-sigh">
+            <span>
+              <strong id="i18n-breathingMode-sigh-title">Physiological sigh</strong>
+              <small id="i18n-breathingMode-sigh-short">For a sudden wave of stress or anxiety: use a few cycles to release tension more quickly.</small>
+            </span>
+          </label>
+          <details>
+            <summary id="i18n-breathingMode-sigh-more">Learn more</summary>
+            <p id="i18n-breathingMode-sigh-long">A regular inhale is followed by a small top-up inhale and a long exhale, similar to a natural physiological sigh. This mode is intended mainly for a few cycles.</p>
+          </details>
+        </div>
+
+        <div class="breathing-mode-option">
+          <label>
+            <input type="radio" name="breathingMode" value="less-air">
+            <span>
+              <strong id="i18n-breathingMode-lessAir-title">Less air</strong>
+              <small id="i18n-breathingMode-lessAir-short">For hyperventilation, such as breathing too quickly or deeply during panic.</small>
+            </span>
+          </label>
+          <details>
+            <summary id="i18n-breathingMode-lessAir-more">Learn more</summary>
+            <p id="i18n-breathingMode-lessAir-long">During hyperventilation, excessive ventilation lowers CO₂, and the urge to inhale more deeply can keep the cycle going. The inhale here is intentionally small, followed by a pause after exhaling.</p>
+          </details>
+        </div>
+          </fieldset>
+        </div>
+      </details>
+
+      <hr>
+
       <h3 id="i18n-settings-breathingSpeed-title">Breathing speed</h3>
 
       <label for="speedSlider" class="slider-label">
@@ -134,6 +215,9 @@
       <p id="i18n-settings-breathsPerMinute-hint" class="slider-hint">
         Slow breathing (4–12 breaths/min) helps the nervous system calm down.<br>
         Watch the circles and move the slider until the rhythm feels comfortable.
+      </p>
+      <p id="i18n-settings-breathingSpeed-fixedHint" class="slider-hint" hidden>
+        This mode uses fixed timing. Choose Regular breathing to adjust BPM.
       </p>
 
       <hr>
@@ -335,8 +419,8 @@
   </footer>
 
   <!-- JS: сначала анимация, потом UI / i18n -->
-  <script defer src="./assets/js/breath.js"></script>
-  <script defer src="./assets/js/script.js"></script>
+  <script defer src="./assets/js/breath.js?v=modes-ui-1"></script>
+  <script defer src="./assets/js/script.js?v=modes-ui-1"></script>
 
 </body>
 </html>
