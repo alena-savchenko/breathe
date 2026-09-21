@@ -45,6 +45,8 @@ buttons.langToggle.ariaLabel=Sprache auswählen
 buttons.musicToggleOn.ariaLabel=Musik ausschalten
 buttons.musicToggleOff.ariaLabel=Musik einschalten
 buttons.settingsToggle.ariaLabel=Einstellungen
+buttons.langClose.ariaLabel=Sprachauswahl schließen
+buttons.settingsClose.ariaLabel=Einstellungen schließen
 
 # About block
 description.title=Über das Tool

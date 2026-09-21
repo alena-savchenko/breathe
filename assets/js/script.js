@@ -12,6 +12,10 @@
   const STORAGE_SCHEMA_VERSION = '2026-02-27T00:00:00Z';
   const STORAGE_VERSION_KEY = 'breath_storage_version';
   const FIRST_VISIT_TUTORIAL_SEEN_KEY = 'breath_first_visit_tutorial_seen';
+  const BREATHING_SPEED_KEY = 'breath_bpm';
+  const MUSIC_VOLUME_KEY = 'breath_music_volume';
+  const BREATHING_MODE_KEY = 'breath_mode';
+  const BREATHING_MODE_IDS = ['default', 'long-exhale', 'box', 'physiological-sigh', 'less-air'];
 
   const TUTORIAL_STEP_SHOW_MS = 9500;
   const TUTORIAL_STEP_GAP_MS = 1800;
@@ -508,6 +512,8 @@
 
     setAriaLabel('langToggle', 'buttons.langToggle.ariaLabel');
     setAriaLabel('settingsToggle', 'buttons.settingsToggle.ariaLabel');
+    setAriaLabel('langClose', 'buttons.langClose.ariaLabel');
+    setAriaLabel('settingsClose', 'buttons.settingsClose.ariaLabel');
     setAriaLabel('themeToggle', 'settings.theme.ariaLabel');
     setAriaLabel('highContrastToggle', 'settings.highContrast.ariaLabel');
     setAriaLabel('largeTextToggle', 'settings.largeText.ariaLabel');
@@ -577,9 +583,26 @@
     } catch (_) {}
   }
 
+  function readStoredNumber(key, defaultValue, min, max) {
+    try {
+      const stored = localStorage.getItem(key);
+      if (stored === null || stored === '') return clamp(defaultValue, min, max);
+      const value = Number(stored);
+      if (Number.isFinite(value)) return clamp(value, min, max);
+    } catch (_) {}
+    return clamp(defaultValue, min, max);
+  }
+
+  function writeStoredNumber(key, value) {
+    try {
+      localStorage.setItem(key, String(value));
+    } catch (_) {}
+  }
+
   function applyHighContrast(enabled, persist) {
     isHighContrastEnabled = !!enabled;
     document.body.classList.toggle('high-contrast', isHighContrastEnabled);
+    window.BreathApp.setHighContrast(isHighContrastEnabled);
     if (highContrastToggle) {
       highContrastToggle.checked = isHighContrastEnabled;
     }
@@ -761,6 +784,7 @@
       musicVolumeSlider.value = String(DEFAULT_MUSIC_VOLUME_PERCENT);
       targetVolume = getMusicVolumeFromSlider();
       updateMusicVolumeLabel(targetVolume);
+      writeStoredNumber(MUSIC_VOLUME_KEY, DEFAULT_MUSIC_VOLUME_PERCENT);
     }
 
     if (!nextEnabled || targetVolume <= 0) {
@@ -816,12 +840,15 @@
   function initMusicVolumeSlider() {
     if (!musicVolumeSlider) return;
 
+    const storedVolume = readStoredNumber(MUSIC_VOLUME_KEY, 0, 0, 100);
+    musicVolumeSlider.value = String(storedVolume);
     const initialVolume = getMusicVolumeFromSlider();
     updateMusicVolumeLabel(initialVolume);
 
     musicVolumeSlider.addEventListener('input', () => {
       const volume = getMusicVolumeFromSlider();
       updateMusicVolumeLabel(volume);
+      writeStoredNumber(MUSIC_VOLUME_KEY, Math.round(volume * 100));
 
       if (volume <= 0) {
         setMusicEnabled(false);
@@ -1274,8 +1301,8 @@
       return;
     }
 
-    const topControls = getTopControlButtons();
-    handleTabCycleForList(e, topControls);
+    // Outside an open panel, keep the browser's natural tab order so the
+    // footer link and future controls remain keyboard-accessible.
   }
 
   // ===== Ползунок скорости =====
@@ -1289,7 +1316,8 @@
       return;
     }
 
-    const initialBpm = parseInt(speedSlider.value || String(defaultBpm), 10);
+    const initialBpm = readStoredNumber(BREATHING_SPEED_KEY, defaultBpm, 4, 12);
+    speedSlider.value = String(initialBpm);
     speedValueEl.textContent = initialBpm;
     window.BreathApp.setBreathingSpeedBpm(initialBpm);
     updateMusicPlaybackRate();
@@ -1299,6 +1327,7 @@
       speedValueEl.textContent = bpm;
       window.BreathApp.setBreathingSpeedBpm(bpm);
       updateMusicPlaybackRate();
+      writeStoredNumber(BREATHING_SPEED_KEY, bpm);
     });
   }
 

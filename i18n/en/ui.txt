@@ -45,6 +45,8 @@ buttons.langToggle.ariaLabel=Choose language
 buttons.musicToggleOn.ariaLabel=Disable music
 buttons.musicToggleOff.ariaLabel=Enable music
 buttons.settingsToggle.ariaLabel=Settings
+buttons.langClose.ariaLabel=Close language menu
+buttons.settingsClose.ariaLabel=Close settings
 
 # About block
 description.title=About

@@ -37,6 +37,21 @@
     userGradientSynced: ['rgba(160, 95, 255, 0.9)', 'rgba(214, 138, 255, 1)', 'rgba(238, 176, 255, 0.9)']
   };
 
+  const RIBBON_PALETTES = {
+    auto: [
+      ['rgba(74,130,250,0.72)', 'rgba(130,190,255,0.78)', 'rgba(175,216,255,0.58)'],
+      ['rgba(75,180,210,0.64)', 'rgba(133,221,231,0.72)', 'rgba(183,233,242,0.54)'],
+      ['rgba(128,113,237,0.66)', 'rgba(171,155,250,0.74)', 'rgba(208,193,255,0.56)'],
+      ['rgba(93,151,235,0.70)', 'rgba(151,201,249,0.76)', 'rgba(193,222,255,0.58)']
+    ],
+    user: [
+      ['rgba(146,93,234,0.72)', 'rgba(190,143,250,0.78)', 'rgba(220,184,255,0.58)'],
+      ['rgba(222,113,182,0.66)', 'rgba(246,162,207,0.74)', 'rgba(255,206,227,0.56)'],
+      ['rgba(116,122,229,0.68)', 'rgba(166,175,248,0.74)', 'rgba(205,209,255,0.56)'],
+      ['rgba(185,107,222,0.70)', 'rgba(222,155,242,0.78)', 'rgba(241,199,252,0.58)']
+    ]
+  };
+
   const THEME_COLORS = {
     light: {
       backgroundColor: '#ffffff',
@@ -50,6 +65,7 @@
 
   let currentTheme = 'light';
   let gradientsEnabled = true;
+  let highContrast = false;
   let reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   let phaseHandler = null;
   let lastPhase = null;
@@ -267,8 +283,74 @@
   window.addEventListener('resize', resize);
   resize();
 
+  function ribbonsEnabled() {
+    return gradientsEnabled && !highContrast && !reducedMotion;
+  }
+
+  function ribbonWidth(radius) {
+    // Scale with the thickness control, but keep the center of small circles open.
+    return Math.min(radius * 0.45, SETTINGS.lineWidth * 4.8, (Math.min(width, height) / 2 - radius - 4) / 1.1);
+  }
+
+  function drawRibbonCircle(radius, time, options) {
+    const { ribbonColors, gradientShift = 0, glow = false } = options;
+    const band = ribbonWidth(radius);
+    const drift = time * 0.16 + gradientShift;
+    const steps = 120;
+    ctx.save();
+
+    // Closed filled ribbons have smooth, varying widths instead of a heavy outline.
+    for (let layer = 0; layer < 4; layer++) {
+      const offset = layer * Math.PI * 0.5;
+      const colors = ribbonColors[layer];
+      const outer = [];
+      const inner = [];
+      for (let i = 0; i <= steps; i++) {
+        const a = i * Math.PI * 2 / steps;
+        const wave = Math.sin(a * 3 + drift + offset);
+        const center = radius + band * (0.34 * wave + 0.18 * Math.sin(a * 2 - drift + offset));
+        const halfWidth = band * (0.24 + 0.3 * (0.5 + 0.5 * Math.sin(a * 2 + offset - drift)));
+        const cos = Math.cos(a);
+        const sin = Math.sin(a);
+        outer.push([cx + (center + halfWidth) * cos, cy + (center + halfWidth) * sin]);
+        inner.push([cx + (center - halfWidth) * cos, cy + (center - halfWidth) * sin]);
+      }
+
+      const angle = drift * 0.6 + offset;
+      const dx = Math.cos(angle) * radius;
+      const dy = Math.sin(angle) * radius;
+      const fill = ctx.createLinearGradient(cx - dx, cy - dy, cx + dx, cy + dy);
+      fill.addColorStop(0, colors[0]);
+      fill.addColorStop(0.36, colors[1]);
+      fill.addColorStop(0.56, currentTheme === 'dark' ? 'rgba(220,230,255,0.38)' : 'rgba(255,255,255,0.75)');
+      fill.addColorStop(0.72, colors[2]);
+      fill.addColorStop(1, colors[0]);
+      ctx.globalAlpha = (layer === 0 ? 0.34 : 0.62) + (glow ? 0.1 : 0);
+      ctx.fillStyle = fill;
+      ctx.beginPath();
+      outer.forEach(([x, y], i) => i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y));
+      for (let i = inner.length - 1; i >= 0; i--) ctx.lineTo(inner[i][0], inner[i][1]);
+      ctx.closePath();
+      ctx.fill();
+
+      // A thin sheen along each fold gives depth without a pulsing glow.
+      ctx.globalAlpha = currentTheme === 'dark' ? 0.2 : 0.42;
+      ctx.strokeStyle = fill;
+      ctx.lineWidth = Math.min(1.5, band * 0.08);
+      ctx.beginPath();
+      outer.forEach(([x, y], i) => i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y));
+      ctx.closePath();
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
   // ===== Рисование "неровного" круга =====
   function drawWobblyCircle(radius, time, options) {
+    if (ribbonsEnabled()) {
+      drawRibbonCircle(radius, time, options);
+      return;
+    }
     const {
       lineWidth = SETTINGS.lineWidth,
       color = 'rgba(0,0,0,0.6)',
@@ -395,7 +477,7 @@
     }
 
     // Only this small hit area reserves touch gestures; the rest of the scene scrolls.
-    const hitRadius = userRadius + SETTINGS.lineWidth / 2 + 12;
+    const hitRadius = userRadius + (ribbonsEnabled() ? ribbonWidth(userRadius) : SETTINGS.lineWidth / 2) + 12;
     interaction.style.width = interaction.style.height = `${hitRadius * 2}px`;
     interaction.style.left = `${cx - hitRadius}px`;
     interaction.style.top = `${cy - hitRadius}px`;
@@ -438,6 +520,7 @@
     drawWobblyCircle(r1, tSec, {
       color: autoColor,
       gradientColors: autoGradient,
+      ribbonColors: RIBBON_PALETTES.auto,
       gradientShift: 0,
       shimmerSpeed: 0.85,
       noiseAmp: SETTINGS.autoNoise.amp,
@@ -459,6 +542,7 @@
     drawWobblyCircle(userRadius, tSec + 10, {
       color: userColor,
       gradientColors: userGradient,
+      ribbonColors: RIBBON_PALETTES.user,
       gradientShift: 1.8,
       shimmerSpeed: 1.1,
       noiseAmp: SETTINGS.userNoise.amp,
@@ -526,6 +610,7 @@
   }
 
   window.BreathApp = {
+    setHighContrast(enabled) { highContrast = !!enabled; },
     setReducedMotion(enabled) { reducedMotion = !!enabled; },
     onPhase(handler) {
       phaseHandler = handler;

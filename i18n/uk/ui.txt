@@ -45,6 +45,8 @@ buttons.langToggle.ariaLabel=Обрати мову
 buttons.musicToggleOn.ariaLabel=Вимкнути музику
 buttons.musicToggleOff.ariaLabel=Увімкнути музику
 buttons.settingsToggle.ariaLabel=Налаштування
+buttons.langClose.ariaLabel=Закрити меню вибору мови
+buttons.settingsClose.ariaLabel=Закрити налаштування
 
 # About block
 description.title=Про застосунок
