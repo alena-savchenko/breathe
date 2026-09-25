@@ -1,4 +1,4 @@
-const CACHE_NAME = 'breath-static-v1.01.03';
+const CACHE_NAME = 'breath-static-v1.01.04';
 
 const CORE_ASSETS = [
   './',

@@ -59,4 +59,4 @@ Then open `http://localhost:8080`.
 
 The source is available under the [MIT License](LICENSE). Credits for the optional music and font are listed in [CREDITS.md](CREDITS.md).
 
-**Current version:** 1.01.03
+**Current version:** 1.01.04

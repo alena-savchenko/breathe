@@ -8,7 +8,7 @@
   const DEFAULT_NO_GRADIENTS = false;
   const DEFAULT_BIONIC_FONT = false;
   const TWO_PI = Math.PI * 2;
-  const APP_VERSION = '1.01.03';
+  const APP_VERSION = '1.01.04';
   const I18N_ASSET_VERSION = 'content-pages-2';
   const STORAGE_SCHEMA_VERSION = '2026-02-27T00:00:00Z';
   const STORAGE_VERSION_KEY = 'breath_storage_version';
