@@ -107,6 +107,8 @@ strong { color: var(--text); }
 .article-nav { margin-top: 42px; padding-top: 24px; border-top: 1px solid var(--border); }
 .article-nav a { font-weight: 600; }
 .site-footer { padding-bottom: 36px; color: var(--muted); font-size: 13px; text-align: center; }
+.legal-page h2 { margin-top: 32px; }
+.legal-address { color: var(--text); font-style: normal; font-size: 18px; line-height: 1.8; }
 
 @media (max-width: 560px) {
   .site-header-inner { align-items: flex-start; flex-direction: column; padding-block: 12px; }

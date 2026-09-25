@@ -4,7 +4,7 @@ const CORE_ASSETS = [
   './',
   './index.html',
   './assets/css/styles.css?v=content-pages-2',
-  './assets/css/content-pages.css?v=2',
+  './assets/css/content-pages.css?v=3',
   './icon.svg',
   './assets/js/breath.js?v=modes-ui-2',
   './assets/js/script.js?v=content-pages-2',
@@ -23,7 +23,8 @@ const CORE_ASSETS = [
   './uk/about-breathing.html',
   './uk/faq.html',
   './de/about-breathing.html',
-  './de/faq.html'
+  './de/faq.html',
+  './impressum.html'
 ];
 
 self.addEventListener('install', (event) => {
